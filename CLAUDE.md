@@ -6,7 +6,9 @@ Coordination repo for Waggo. It holds no product code: specs, Claude Code agents
 |---|---|---|---|
 | `../waggo-api` | `Faebb/waggo-api` | .NET 10, Clean Architecture, PostgreSQL + PostGIS | `../waggo-api/CLAUDE.md` |
 | `../waggo-mobile` | `Faebb/waggo-mobile` | Expo SDK 57, TypeScript, feature-based | `../waggo-mobile/AGENTS.md` |
-| `../../../Vault Waggo` | Obsidian vault (not a repo) | Spanish docs | `00 - MOC Waggo.md` |
+| `../../../Vault Waggo` (or `$WAGGO_VAULT`) | Obsidian vault (not a repo) | Spanish docs | `00 - MOC Waggo.md` |
+
+If the vault is not available, work from the repo rules and the code, and say which note you could not read.
 
 Before editing a product repo, read that repo's rules file and the checklist in `.claude/rules/` (`backend-checklist.md`, `mobile-checklist.md`). Code, comments and commits are in English; docs, specs and user-facing messages in Spanish. Use `Vault Waggo/01 Proyecto/Glosario.md` to name things.
 
