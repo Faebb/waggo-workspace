@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "additionalDirectories": [
+      "../waggo-api",
+      "../waggo-mobile"
+    ],
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git -C:*)",
+      "Bash(dotnet format:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(npm run format:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Read(**/.env)",
+      "Read(**/.env.*.local)"
+    ]
+  }
+}
