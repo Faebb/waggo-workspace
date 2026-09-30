@@ -54,6 +54,10 @@ No aplica: la pantalla es estática.
 - `shared/ui/Button` tiene variantes `primary` y `secondary` y soporta `disabled`. `theme.ts` suma los tokens `radius` y `typography`, el espaciado `xl` y el color `primarySoft`.
 - El contenido se limita a 480 px de ancho y se centra, para que en tablet y web se lea como una columna.
 
+| Móvil (500 px) | Web (1000 px) |
+|---|---|
+| ![Bienvenida en móvil](assets/UX-001-bienvenida-movil.png) | ![Bienvenida en web](assets/UX-001-bienvenida-web.png) |
+
 ## Plan TDD (mobile)
 1. `Button.test.tsx`: ejemplos 4 y 5, más la variante `primary`.
 2. `ValueCard.test.tsx`: pinta el título y la descripción de un pilar.
