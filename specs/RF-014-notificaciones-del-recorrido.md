@@ -1,7 +1,7 @@
 ---
 rf: RF-014
 titulo: Notificaciones del recorrido (bandeja en la app; push después)
-estado: En progreso
+estado: Implementada
 modulo: Messaging
 sprint: 6
 prioridad: Alta
@@ -25,7 +25,7 @@ Como en Uber, cada momento del paseo avisa a la otra parte: el paseo fue aceptad
 - Como **paseador** quiero **saber si el dueño canceló, si hay una emergencia y cuándo me pagaron** para **no perder tiempo ni dinero**.
 
 ## Criterios de aceptación
-- [ ] Se crean notificaciones en estos momentos:
+- [x] Se crean notificaciones en estos momentos:
 
   | Momento | Para | Prioridad |
   |---|---|---|
@@ -36,9 +36,9 @@ Como en Uber, cada momento del paseo avisa a la otra parte: el paseo fue aceptad
   | Cancelado, si ya había paseador | paseador | normal |
   | Emergencia | la otra parte | alta |
   | Salida de zona y detención | dueño | alta |
-- [ ] Cada usuario ve solo sus notificaciones, la más reciente primero, con cuántas no ha leído.
-- [ ] El usuario marca todas como leídas.
-- [ ] La app muestra el contador en el inicio del dueño y del paseador, abre la bandeja y desde una notificación va al paseo.
+- [x] Cada usuario ve solo sus notificaciones, la más reciente primero, con cuántas no ha leído.
+- [x] El usuario marca todas como leídas.
+- [x] La app muestra el contador en el inicio del dueño y del paseador, abre la bandeja y desde una notificación va al paseo.
 
 ## Tabla de ejemplos
 | # | Entrada | Resultado esperado | Tipo |
@@ -64,7 +64,11 @@ Como en Uber, cada momento del paseo avisa a la otra parte: el paseo fue aceptad
 - **Application**: `INotificationRepository`. `AcceptWalk`, `StartWalk`, `FinishWalk`, `CancelWalk`, `RaiseEmergency` y `RecordTrack` crean la notificación después de guardar. `Notifications/Queries/ListMyNotifications` y `Notifications/Commands/MarkNotificationsRead` devuelven `NotificationsResponse(unreadCount, items)`.
 - **Infrastructure**: `messaging.notifications` (índice por usuario y fecha), migración `AddNotifications`.
 - **Api**: `GET /api/v1/notifications`, `POST /api/v1/notifications/read`.
-- **Mobile**: `features/notifications` — `NotificationBell` (botón con el número sin leer) en los dos inicios, `NotificationsScreen` en `/notificaciones` y `/paseador/notificaciones`. Al abrir la bandeja se marcan como leídas.
+- **Mobile**: `features/notifications`. `NotificationBell` muestra "Avisos" y el número sin leer en amarillo, sin íconos (ADR-013), en los dos inicios. `NotificationsScreen` vive en `/notificaciones` y `/paseador/notificaciones`: las urgentes llevan "URGENTE" en rojo, al tocar un aviso se abre su paseo y al abrir la bandeja todo queda leído.
+
+| Inicio con avisos | Bandeja |
+|---|---|
+| ![Inicio](assets/RF-014-inicio-avisos.png) | ![Bandeja](assets/RF-014-bandeja.png) |
 
 ## Preguntas abiertas para el PO
 - [ ] ¿Los mensajes del chat deben notificar?
@@ -74,5 +78,5 @@ Como en Uber, cada momento del paseo avisa a la otra parte: el paseo fue aceptad
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api | _se completa al cerrar_ | |
-| waggo-mobile | _se completa al cerrar_ | |
+| waggo-api | `Entities/Notifications/Notification`, `Enums/Notifications/{NotificationKind, NotificationPriority}`; `INotificationRepository`, `Notifications/{NotificationInbox, NotificationResponse, NotificationsResponse}`, `Notifications/Queries/ListMyNotifications`, `Notifications/Commands/MarkNotificationsRead`; avisos en `AcceptWalk`, `StartWalk`, `FinishWalk`, `CancelWalk`, `RaiseEmergency`, `RecordTrack`; `NotificationConfiguration`, `NotificationRepository`, migración `AddNotifications`; `Endpoints/Notifications` | `NotificationEndpointTests` (ejemplos 1–3 y 5–8), `NotificationTests`; ejemplo 4 en `CancelWalkHandlerTests`; `AcceptWalkHandlerTests`, `StartAndFinishWalkHandlerTests`, `AlertHandlersTests` |
+| waggo-mobile | `src/features/notifications/{api/notificationsApi, hooks/useNotifications, model/types, components/NotificationBell, screens/NotificationsScreen}`; `HomeScreen`, `WalkerHomeScreen`; rutas `app/notificaciones.tsx`, `app/paseador/notificaciones.tsx` | `notificationsApi.test.ts`, `NotificationBell.test.tsx`, `NotificationsScreen.test.tsx`, `HomeScreen.test.tsx`, `WalkerHomeScreen.test.tsx` |

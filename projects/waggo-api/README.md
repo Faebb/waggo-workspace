@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 68dfe82. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 87e9a65. No editar aquí. -->
 
 # waggo-api
 
@@ -148,6 +148,16 @@ curl -X POST -H "X-Dev-User-Id: dev-admin" -H "X-Dev-Roles: admin" http://localh
 Las posiciones se guardan en `tracking.track_points` (GiST en la posición, BRIN en el tiempo). Por ahora la app consulta la ruta cada pocos segundos; SignalR (RNF-007) llegará en otro slice.
 
 Estados: `Requested → Accepted → InProgress → Completed`, o `Cancelled`. El punto de recogida se guarda como `geography(Point, 4326)` de PostGIS con índice GiST, para el matching por cercanía (RF-006).
+
+## Notificaciones (RF-014)
+Cada momento del paseo deja un aviso para la otra parte en `messaging.notifications`. Al dueño le avisa cuando aceptan, inician o terminan su paseo, y de las alertas automáticas. Al paseador, cuando le pagan o cuando el dueño cancela. Las emergencias le llegan a la otra parte. Emergencias y alertas son `priority: High`.
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/api/v1/notifications` | `unreadCount` y los 50 avisos más recientes del usuario |
+| `POST` | `/api/v1/notifications/read` | Marca todos como leídos |
+
+Por ahora la app consulta cada 15 s. El envío *push* llegará en otro slice y usará esta misma tabla como *outbox* (RNF-008).
 
 ## Pagos (RF-015 – RF-018)
 Sin efectivo, como en Uber. Al **pedir** el paseo se retiene el total en el método de pago del dueño; si la pasarela lo rechaza, responde `422 Payments.Declined` y el paseo no se crea. Al **cancelar**, la retención se libera. Al **terminar**, se cobra: la comisión queda para Waggo y `walkerPayout` va al paseador. Solo se guarda la referencia de la pasarela, nunca datos de tarjeta (RNF-004). Tabla `payments.walk_payments`.

@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ d6b83c6. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ b648b51. No editar aquí. -->
 
 # waggo-mobile
 
@@ -49,6 +49,7 @@ src/
     messaging/         → chat del dueño con el paseador durante el paseo (RF-013)
     pets/              → mis perros y agregar perro (RF-004)
     payments/          → estado del pago de cada paseo y ganancias del paseador (RF-015 – RF-018)
+    notifications/     → "Avisos" con el número sin leer y la bandeja de avisos del paseo (RF-014)
     pricing/           → un folder por módulo de negocio (cotizador RF-019)
       api/             → llamadas HTTP + esquemas Zod
       hooks/           → hooks de TanStack Query
