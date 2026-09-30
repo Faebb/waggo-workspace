@@ -16,7 +16,7 @@ actualizado: 2026-09-30
 Como el chat con el conductor en Uber: mientras el paseo está **aceptado o en curso**, el dueño y el paseador se escriben dentro de la app ("¿Ya llegaste?", "Luna tomó agua"). Al terminar o cancelar el paseo, la conversación queda **solo lectura**.
 
 > [!note] Decisiones asumidas por el desarrollador
-> - **Transporte**: la app consulta los mensajes nuevos cada 3 s (`?after=`). SignalR llega en el mismo slice que la ruta en vivo (RNF-007).
+> - **Transporte**: la app consulta la conversación cada 3 s. La API ya admite `?after=` para pedir solo lo nuevo; la app lo usará cuando las conversaciones crezcan. SignalR llega en el mismo slice que la ruta en vivo (RNF-007).
 > - Solo texto (hasta 1.000 caracteres). Fotos y audios quedan para después.
 
 ## Historia de usuario
