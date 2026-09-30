@@ -26,3 +26,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-004 Perfil de mascota](RF-004-perfil-de-mascota.md) | RF-004, RNF-003 | `Pets` | 3 (adelantado) | Implementada |
 | [RF-007 Solicitud de paseo — dueño](RF-007-solicitud-de-paseo-dueno.md) | RF-007 (slice dueño) | `Walks` | 3 | Implementada |
 | [RF-007 Solicitud de paseo — paseador](RF-007-solicitud-de-paseo-paseador.md) | RF-007 (slice paseador) | `Walks` | 3 | Implementada |
+| [RF-008 Paseo en vivo](RF-008-paseo-en-vivo.md) | RF-008, RF-011 | `Tracking` | 5 (adelantado) | Implementada |

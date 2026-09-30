@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ f8366e6. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ 8c71de7. No editar aquí. -->
 
 # waggo-mobile
 
@@ -44,7 +44,8 @@ src/
     onboarding/        → pantalla de bienvenida (UX-001)
     home/              → inicio del dueño, estilo Uber: "¿Quién sale a pasear hoy?" (RF-007)
     walks/             → pedir paseo, estado del paseo y mis paseos (RF-007)
-    walker/            → lado del paseador: solicitudes cercanas, aceptar y paseos aceptados (RF-007)
+    walker/            → lado del paseador: solicitudes cercanas, aceptar, iniciar y terminar (RF-007, RF-008)
+    tracking/          → ruta en vivo (SVG), métricas y envío de la posición del paseador (RF-008, RF-011)
     pets/              → mis perros y agregar perro (RF-004)
     pricing/           → un folder por módulo de negocio (cotizador RF-019)
       api/             → llamadas HTTP + esquemas Zod
