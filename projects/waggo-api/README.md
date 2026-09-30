@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 204939b. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 1883977. No editar aquí. -->
 
 # waggo-api
 
@@ -120,6 +120,8 @@ Lado del paseador (rol `walker`), como un conductor que ve solicitudes:
 | `GET` | `/api/v1/walks/available?latitude=&longitude=` | Solicitudes abiertas de otros usuarios con lo que gana el paseador; con ubicación, las más cercanas primero y `distanceKm` |
 | `POST` | `/api/v1/walks/{id}/accept` | Acepta; el primero gana. `409 Walks.NotAvailable` si ya la tomó otro, `422 Walks.OwnWalk` si es su propio paseo |
 | `GET` | `/api/v1/walks/assigned` | Paseos que aceptó |
+
+Con ubicación, `available` usa **PostGIS** (RF-006): `ST_DWithin` sobre el índice GiST devuelve solo las solicitudes a menos de 5 km, ordenadas por `ST_Distance`.
 
 `GET /api/v1/walks/{id}` responde al dueño y al paseador asignado. Dos aceptaciones simultáneas no pueden ganar ambas: `walks` usa `xmin` de PostgreSQL como token de concurrencia optimista.
 

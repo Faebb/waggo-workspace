@@ -30,3 +30,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-012 Alerta de emergencia](RF-012-alerta-de-emergencia.md) | RF-012 (sin push) | `Tracking` | 6 (adelantado) | Implementada |
 | [RF-013 Chat del paseo](RF-013-chat-del-paseo.md) | RF-013 | `Messaging` | 8 (adelantado) | Implementada |
 | [RF-009 + RF-010 Alertas automáticas](RF-009-RF-010-alertas-automaticas.md) | RF-009, RF-010 | `Tracking` | 6 (adelantado) | Implementada |
+| [RF-006 Matching por cercanía](RF-006-matching-por-cercania.md) | RF-006 (sin verificación) | `Walks` | 4 | Implementada |
