@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 1883977. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 212f565. No editar aquí. -->
 
 # waggo-api
 
@@ -132,6 +132,12 @@ Con ubicación, `available` usa **PostGIS** (RF-006): `ST_DWithin` sobre el índ
 | `POST` | `/api/v1/walks/{id}/track` | Lote de 1–100 posiciones `{ latitude, longitude, recordedAt }` mientras está en curso |
 | `GET` | `/api/v1/walks/{id}/track` | Ruta ordenada con `distanceKm` y `elapsedMinutes` (dueño o paseador) |
 | `POST` | `/api/v1/walks/{id}/finish` | El paseador termina el paseo (`InProgress → Completed`) |
+
+**Paseadores verificados (RF-002, RF-003)**: `POST /api/v1/walkers/me` `{ fullName, documentType: CC|CE|PP, documentNumber, phone, experience? }` crea el perfil del paseador en estado `Pending` y `GET /api/v1/walkers/me` lo devuelve (el documento va cifrado en `identity.walker_profiles`; la respuesta solo trae `documentLast4`). Un administrador verifica a mano mientras se elige proveedor: `GET /api/v1/admin/walkers?status=Pending`, `POST /api/v1/admin/walkers/{id}/approve` y `POST /api/v1/admin/walkers/{id}/reject` `{ reason }`. Solo un paseador `Approved` lista solicitudes y acepta paseos (si no, `403 Walkers.NotVerified`). En local, para probar el lado del paseador:
+
+```bash
+curl -X POST -H "X-Dev-User-Id: dev-admin" -H "X-Dev-Roles: admin" http://localhost:8080/api/v1/admin/walkers/<id>/approve
+```
 
 **Emergencia (RF-012)**: `POST /api/v1/walks/{id}/emergency` (dueño o paseador asignado; `message`, `latitude` y `longitude` opcionales) mientras el paseo está aceptado o en curso, y `GET /api/v1/walks/{id}/alerts` para ver las alertas, la más reciente primero. Se guardan en `tracking.walk_alerts`.
 

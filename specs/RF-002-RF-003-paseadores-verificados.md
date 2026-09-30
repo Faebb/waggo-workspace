@@ -1,7 +1,7 @@
 ---
 rf: RF-002, RF-003
 titulo: Registro de paseadores y verificación (manual hasta elegir proveedor)
-estado: En progreso
+estado: Implementada
 modulo: Identity
 sprint: 2
 prioridad: Alta
@@ -25,11 +25,11 @@ El pilar de Waggo es la **confianza**: solo paseadores verificados reciben paseo
 - Como **administrador** quiero **aprobar o rechazar a los paseadores pendientes** para **que solo personas verificadas pasen perros**.
 
 ## Criterios de aceptación
-- [ ] El paseador crea su perfil (nombre, tipo y número de documento, teléfono, experiencia opcional); queda `Pending`.
-- [ ] El número de documento se guarda cifrado; el paseador ve solo los últimos 4 dígitos.
-- [ ] Un paseador tiene un solo perfil (409 si lo intenta dos veces).
-- [ ] El administrador lista los pendientes y aprueba o rechaza (con motivo) a cada uno.
-- [ ] Solo un paseador `Approved` ve solicitudes (`GET /walks/available`) y acepta paseos; si no, 403 `Walkers.NotVerified`.
+- [x] El paseador crea su perfil (nombre, tipo y número de documento, teléfono, experiencia opcional); queda `Pending`.
+- [x] El número de documento se guarda cifrado; el paseador ve solo los últimos 4 dígitos.
+- [x] Un paseador tiene un solo perfil (409 si lo intenta dos veces).
+- [x] El administrador lista los pendientes y aprueba o rechaza (con motivo) a cada uno.
+- [x] Solo un paseador `Approved` ve solicitudes (`GET /walks/available`) y acepta paseos; si no, 403 `Walkers.NotVerified`.
 
 ## Tabla de ejemplos
 | # | Entrada | Resultado esperado | Tipo |
@@ -59,8 +59,12 @@ El pilar de Waggo es la **confianza**: solo paseadores verificados reciben paseo
 - **Domain**: `Entities/Walkers/WalkerProfile` (`Register`, `Approve`, `Reject`), `Enums/Walkers/{VerificationStatus, DocumentType}`, `Errors/Walkers/WalkerErrors`.
 - **Application**: `Walkers/Commands/{RegisterWalker, ApproveWalker, RejectWalker}`, `Walkers/Queries/{GetMyWalkerProfile, ListWalkersForReview}`, `IWalkerProfileRepository`; `ListAvailableWalks` y `AcceptWalk` exigen paseador aprobado.
 - **Infrastructure**: `identity.walker_profiles` con `document_number` cifrado (`EncryptedStringConverter`), migración `AddWalkerProfiles`.
-- **Api**: `Endpoints/Walkers/*` (rol walker), `Endpoints/Admin/*` (rol admin).
-- **Mobile**: `features/walker` — `BecomeWalkerScreen` (formulario) y estado "Estamos verificando tu identidad" / "No pudimos verificarte" en `/paseador` según el perfil.
+- **Api**: `Endpoints/Walkers/WalkersEndpoints` con dos grupos: `/walkers/me` (política walker) y `/admin/walkers` (política admin). Validación de la petición en `RegisterWalkerRequestValidator` (campos obligatorios y tipo de documento); los formatos los valida el dominio.
+- **Mobile**: `features/walker` — `WalkerGate` envuelve `/paseador`: sin perfil muestra `BecomeWalkerScreen` ("Hazte paseador"), pendiente muestra "Estamos verificando tu perfil" (se revisa cada 30 s y con "Revisar de nuevo"), rechazado muestra "No pudimos verificar tu perfil" con el motivo, y aprobado deja pasar a las solicitudes. El formulario quita puntos del documento y espacios del celular antes de enviar (`walkerForm`).
+
+| Hazte paseador | Verificando | Aprobado |
+|---|---|---|
+| ![Registro](assets/RF-002-hazte-paseador.png) | ![Pendiente](assets/RF-003-verificando.png) | ![Aprobado](assets/RF-003-aprobado.png) |
 
 ## Preguntas abiertas para el PO
 - [ ] Proveedor de verificación de identidad y antecedentes (ya en el roadmap).
@@ -70,5 +74,5 @@ El pilar de Waggo es la **confianza**: solo paseadores verificados reciben paseo
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api | _se completa al cerrar_ | |
-| waggo-mobile | _se completa al cerrar_ | |
+| waggo-api | `Entities/Walkers/WalkerProfile`, `Enums/Walkers/{VerificationStatus, DocumentType}`, `Errors/Walkers/WalkerErrors`; `Walkers/Commands/{RegisterWalker, ApproveWalker, RejectWalker}`, `Walkers/Queries/{GetMyWalkerProfile, ListWalkersForReview}`, `Walkers/WalkerVerification` (usado por `AcceptWalk` y `ListAvailableWalks`), `IWalkerProfileRepository`; `WalkerProfileConfiguration`, `WalkerProfileRepository`, migración `AddWalkerProfiles`; `Endpoints/Walkers` | `WalkerProfileEndpointTests` (ejemplos 1–11), `WalkerProfileTests`; `WalkScenario.VerifiedWalkerAsync` en las pruebas de paseos; `WalkerMother` en las unitarias |
+| waggo-mobile | `src/features/walker/{api/walkerProfileApi, hooks/useWalkerProfile, model/{types, walkerForm}, components/WalkerGate, screens/BecomeWalkerScreen}`, `app/paseador/index.tsx` | `walkerProfileApi.test.ts`, `walkerForm.test.ts`, `WalkerGate.test.tsx`, `BecomeWalkerScreen.test.tsx` |
