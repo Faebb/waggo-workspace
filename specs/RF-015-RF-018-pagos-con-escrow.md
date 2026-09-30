@@ -1,7 +1,7 @@
 ---
 rf: RF-015, RF-016, RF-017, RF-018
 titulo: Pago dentro de la app con retención (escrow), split al paseador y comisión
-estado: En progreso
+estado: Implementada
 modulo: Payments
 sprint: 7
 prioridad: Alta
@@ -28,12 +28,12 @@ Como en Uber, no hay efectivo. Cuando el dueño **confirma** la solicitud, la pl
 - Como **plataforma** quiero **retener la comisión antes de dispersar** para **sostener el servicio**.
 
 ## Criterios de aceptación
-- [ ] Al solicitar un paseo se retiene el total en la pasarela y el pago queda `Held`. Si la pasarela rechaza, la solicitud falla con `Payments.Declined` y no se crea el paseo.
-- [ ] Al cancelar un paseo (solicitado o aceptado) la retención se libera: `Released`.
-- [ ] Al terminar el paseo el pago se cobra: `Captured`, con la comisión para Waggo y `walkerPayout` para el paseador.
-- [ ] El dueño y el paseador asignado ven el pago del paseo; nadie más.
-- [ ] El paseador ve lo que ha ganado: total y paseos cobrados, el más reciente primero.
-- [ ] No se guarda ningún dato de tarjeta, solo la referencia de la pasarela.
+- [x] Al solicitar un paseo se retiene el total en la pasarela y el pago queda `Held`. Si la pasarela rechaza, la solicitud falla con `Payments.Declined` y no se crea el paseo.
+- [x] Al cancelar un paseo (solicitado o aceptado) la retención se libera: `Released`.
+- [x] Al terminar el paseo el pago se cobra: `Captured`, con la comisión para Waggo y `walkerPayout` para el paseador.
+- [x] El dueño y el paseador asignado ven el pago del paseo; nadie más.
+- [x] El paseador ve lo que ha ganado: total y paseos cobrados, el más reciente primero.
+- [x] No se guarda ningún dato de tarjeta, solo la referencia de la pasarela.
 
 ## Tabla de ejemplos
 | # | Entrada | Resultado esperado | Tipo |
@@ -61,7 +61,11 @@ Como en Uber, no hay efectivo. Cuando el dueño **confirma** la solicitud, la pl
 - **Application**: `IPaymentGateway` (`HoldAsync`, `CaptureAsync`, `ReleaseAsync`), `IWalkPaymentRepository`; `RequestWalk` retiene, `CancelWalk` libera, `FinishWalk` cobra; `Payments/Queries/{GetWalkPayment, GetMyEarnings}`.
 - **Infrastructure**: `payments.walk_payments` (migración `AddWalkPayments`), `SimulatedPaymentGateway`, `PaymentOptions` (`Payments:Provider`).
 - **Api**: `GET /api/v1/walks/{id}/payment`, `GET /api/v1/payments/earnings` (rol walker).
-- **Mobile**: el dueño ve "Pago retenido", "Pagado" o "Reembolsado" en el estado del paseo; el paseador ve "Te pagamos $ X" al terminar y sus ganancias en el inicio.
+- **Mobile**: `features/payments`. `PaymentSummary` agrega la fila "Pago" en el detalle del paseo. El dueño ve "Retenido: se cobra al terminar", "Pagado" o "Liberado: no se cobró"; el paseador ve "Se paga al terminar", "Pagado a tu cuenta" o "Sin cobro: se canceló". `EarningsCard` muestra las ganancias en el inicio del paseador. Al pedir el paseo, la pantalla aclara: "Se retiene en tu método de pago y solo se cobra si el paseo ocurre."
+
+| Dueño (en curso) | Paseador (terminado) | Ganancias |
+|---|---|---|
+| ![Dueño](assets/RF-016-dueno-retenido.png) | ![Paseador](assets/RF-017-paseador-pagado.png) | ![Ganancias](assets/RF-017-ganancias.png) |
 
 ## Preguntas abiertas para el PO
 - [ ] Pasarela: Stripe o MercadoPago (Split payments y cuentas de paseadores).
@@ -71,5 +75,5 @@ Como en Uber, no hay efectivo. Cuando el dueño **confirma** la solicitud, la pl
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api | _se completa al cerrar_ | |
-| waggo-mobile | _se completa al cerrar_ | |
+| waggo-api | `Entities/Payments/WalkPayment`, `Enums/Payments/PaymentStatus`, `Errors/Payments/PaymentErrors`; `IPaymentGateway`, `IWalkPaymentRepository`, `Models/Payments/{PaymentHold, PaymentCapture}`; `Payments/Queries/{GetWalkPayment, GetMyEarnings}`; `RequestWalk`, `CancelWalk` y `FinishWalk` retienen, liberan y cobran; `WalkPaymentConfiguration`, `WalkPaymentRepository`, `SimulatedPaymentGateway`, `PaymentOptions`, migración `AddWalkPayments`; `Endpoints/Payments` | `PaymentEndpointTests` (ejemplos 1–8), `WalkPaymentTests`, `RequestWalkHandlerTests`, `CancelWalkHandlerTests`, `StartAndFinishWalkHandlerTests` (con `PaymentMother`) |
+| waggo-mobile | `src/features/payments/{api/paymentsApi, hooks/usePayments, model/{types, paymentText}, components/{PaymentSummary, EarningsCard}}`; `WalkStatusScreen`, `AssignedWalkScreen`, `WalkerHomeScreen`, `RequestWalkScreen` | `paymentsApi.test.ts`, `paymentText.test.ts`, `PaymentSummary.test.tsx`, `EarningsCard.test.tsx`, `RequestWalkScreen.test.tsx` |

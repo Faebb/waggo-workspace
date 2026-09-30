@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 212f565. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 68dfe82. No editar aquí. -->
 
 # waggo-api
 
@@ -148,6 +148,16 @@ curl -X POST -H "X-Dev-User-Id: dev-admin" -H "X-Dev-Roles: admin" http://localh
 Las posiciones se guardan en `tracking.track_points` (GiST en la posición, BRIN en el tiempo). Por ahora la app consulta la ruta cada pocos segundos; SignalR (RNF-007) llegará en otro slice.
 
 Estados: `Requested → Accepted → InProgress → Completed`, o `Cancelled`. El punto de recogida se guarda como `geography(Point, 4326)` de PostGIS con índice GiST, para el matching por cercanía (RF-006).
+
+## Pagos (RF-015 – RF-018)
+Sin efectivo, como en Uber. Al **pedir** el paseo se retiene el total en el método de pago del dueño; si la pasarela lo rechaza, responde `422 Payments.Declined` y el paseo no se crea. Al **cancelar**, la retención se libera. Al **terminar**, se cobra: la comisión queda para Waggo y `walkerPayout` va al paseador. Solo se guarda la referencia de la pasarela, nunca datos de tarjeta (RNF-004). Tabla `payments.walk_payments`.
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/api/v1/walks/{id}/payment` | Estado del pago (`Held`, `Captured`, `Released`) para el dueño o el paseador asignado |
+| `GET` | `/api/v1/payments/earnings` | Lo que ha ganado el paseador: total y paseos cobrados |
+
+Mientras se elige el proveedor (Stripe o MercadoPago) solo existe la pasarela **simulada** (`Payments:Provider = Simulated`). Viene configurada en Development y en las pruebas, y en cualquier otro ambiente la API no arranca. La simulación rechaza a los usuarios cuyo id contiene `card-declined`, así que un rechazo se prueba con el encabezado `X-Dev-User-Id: owner-card-declined`.
 
 ## Base de datos y datos sensibles
 - EF Core + Npgsql con nombres `snake_case` y un schema por módulo (`pets`, `walks`, …). Las posiciones usan PostGIS a través de NetTopologySuite; el dominio solo conoce su `GeoPoint`.
