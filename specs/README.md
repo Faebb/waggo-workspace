@@ -25,3 +25,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [UX-001 Pantalla de bienvenida](UX-001-pantalla-de-bienvenida.md) | — (transversal, solo mobile) | `Onboarding` | 1 | Implementada |
 | [RF-004 Perfil de mascota](RF-004-perfil-de-mascota.md) | RF-004, RNF-003 | `Pets` | 3 (adelantado) | Implementada |
 | [RF-007 Solicitud de paseo — dueño](RF-007-solicitud-de-paseo-dueno.md) | RF-007 (slice dueño) | `Walks` | 3 | Implementada |
+| [RF-007 Solicitud de paseo — paseador](RF-007-solicitud-de-paseo-paseador.md) | RF-007 (slice paseador) | `Walks` | 3 | Implementada |

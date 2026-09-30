@@ -1,7 +1,7 @@
 ---
 rf: RF-007
 titulo: Solicitud de paseo — lado del paseador (aceptar)
-estado: En progreso
+estado: Implementada
 modulo: Walks
 sprint: 3
 prioridad: Alta
@@ -24,12 +24,12 @@ Cierra RF-007 ("el paseador acepta o rechaza"). Como un conductor de Uber, el pa
 Como **paseador** quiero **ver los paseos pedidos cerca de mí y lo que voy a ganar, y aceptar uno con un toque** para **llenar mi día de trabajo sin intermediarios**.
 
 ## Criterios de aceptación
-- [ ] El paseador ve las solicitudes en estado `Requested` que no son suyas como dueño, con tipo, duración, número de perros, zona, hora y **lo que gana** (`walkerPayout`).
-- [ ] Si envía su ubicación, las ve ordenadas de la más cercana a la más lejana, con la distancia; si no, por hora del paseo.
-- [ ] Al aceptar, el paseo pasa a `Accepted` con su `walkerId`, y el dueño lo ve en su pantalla ("Tu paseador va en camino").
-- [ ] Si otro paseador ya la aceptó, recibe un error claro (409). Dos aceptaciones simultáneas no pueden ganar ambas.
-- [ ] Un usuario no puede aceptar su propio paseo.
-- [ ] El paseador ve los paseos que aceptó y su detalle (dirección exacta e indicaciones).
+- [x] El paseador ve las solicitudes en estado `Requested` que no son suyas como dueño, con tipo, duración, número de perros, zona, hora y **lo que gana** (`walkerPayout`).
+- [x] Si envía su ubicación, las ve ordenadas de la más cercana a la más lejana, con la distancia; si no, por hora del paseo.
+- [x] Al aceptar, el paseo pasa a `Accepted` con su `walkerId`, y el dueño lo ve en su pantalla ("Tu paseador va en camino").
+- [x] Si otro paseador ya la aceptó, recibe un error claro (409). Dos aceptaciones simultáneas no pueden ganar ambas.
+- [x] Un usuario no puede aceptar su propio paseo.
+- [x] El paseador ve los paseos que aceptó y su detalle (dirección exacta e indicaciones).
 
 ## Tabla de ejemplos
 | # | Entrada | Resultado esperado | Tipo |
@@ -79,11 +79,16 @@ Como **paseador** quiero **ver los paseos pedidos cerca de mí y lo que voy a ga
 - **Domain**: `Walk.Accept(walkerId, now)` (`AcceptedAt`), `GeoPoint.DistanceKmTo(other)` (haversine), errores `NotAvailable` (Conflict) y `OwnWalk` (BusinessRule).
 - **Application**: `Walks/Commands/AcceptWalk`, `Walks/Queries/{ListAvailableWalks, ListAssignedWalks}`, `Walks/AvailableWalkResponse`; `GetWalk` admite al paseador asignado. `IWalkRepository` suma `ListRequestedAsync` y `ListByWalkerAsync`.
 - **Infrastructure**: token de concurrencia `xmin` en `walks` (migración `AddWalkConcurrency`); `WalkRepository.SaveChangesAsync` traduce `DbUpdateConcurrencyException` a `ConflictException(Walks.NotAvailable)`.
-- **Mobile**: la bienvenida ofrece "Quiero pasear a mi perro" y "Soy paseador"; `shared/api/devIdentity` fija los headers de identidad de desarrollo; `features/walker` — `WalkerHomeScreen` (`/paseador`: solicitudes cercanas y aceptadas), `WalkOfferScreen` (`/paseador/[id]`: detalle y "Aceptar paseo").
+- **Mobile**: la bienvenida ofrece "Quiero pasear a mi perro" y "Soy paseador". `shared/api/devIdentity` + `_layout` fijan la identidad de desarrollo según la ruta (`/paseador` → `dev-walker`, el resto → `dev-owner`). `features/walker`: `WalkerHomeScreen` (`/paseador`: tarjetas "Ganas $ …" con "Aceptar", orden por cercanía al compartir la ubicación, refresco cada 10 s, y "Tus paseos") y `AssignedWalkScreen` (`/paseador/[id]`: recogida exacta, indicaciones y ganancia; avisa si el dueño canceló). Se acepta desde la tarjeta, como un conductor; no hay pantalla de detalle previa porque antes de aceptar el paseador no puede leer el paseo completo.
+- Concurrencia demostrada con `WalkConcurrencyTests`: dos paseadores cargan el mismo paseo, aceptan y solo el primero guarda.
+
+| Entrada por rol | Solicitudes | Paseo aceptado (paseador) | Vista del dueño |
+|---|---|---|---|
+| ![Bienvenida](assets/RF-007-bienvenida-roles.png) | ![Solicitudes](assets/RF-007-paseador-solicitudes.png) | ![Aceptado](assets/RF-007-paseador-aceptado.png) | ![Dueño](assets/RF-007-dueno-aceptado.png) |
 
 ## Plan TDD
 **Backend**: `WalkerEndpointTests` (integración) → `WalkTests` (Accept), `GeoPointTests` (distancia) → `AcceptWalkHandlerTests`, `ListAvailableWalksHandlerTests`, `ListAssignedWalksHandlerTests`, `GetWalkHandlerTests` (paseador) → validador de la consulta.
-**Mobile**: `devIdentity.test.ts`, `httpClient` (headers), `walkerApi.test.ts`, `WalkerHomeScreen.test.tsx`, `WalkOfferScreen.test.tsx`, `WelcomeScreen.test.tsx`.
+**Mobile**: `devIdentity.test.ts`, `httpClient` (headers), `walkerApi.test.ts`, `describeOffer.test.ts`, `WalkerHomeScreen.test.tsx`, `AssignedWalkScreen.test.tsx`, `WelcomeScreen.test.tsx`.
 
 ## Preguntas abiertas para el PO
 - [ ] ¿Qué ve el paseador antes de aceptar? (¿dirección exacta o solo el barrio?, ¿nombres y tamaños de los perros?)
@@ -94,5 +99,5 @@ Como **paseador** quiero **ver los paseos pedidos cerca de mí y lo que voy a ga
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api | _se completa al cerrar_ | |
-| waggo-mobile | _se completa al cerrar_ | |
+| waggo-api | `Walk.Accept`, `GeoPoint.DistanceKmTo`, `WalkErrors.{NotAvailable, OwnWalk}`; `Waggo.Application/Walks/{AvailableWalkResponse, Commands/AcceptWalk/*, Queries/{ListAvailableWalks, ListAssignedWalks}/*}`, `GetWalkHandler` (paseador asignado); `WalkRepository` (`ListRequestedAsync`, `ListByWalkerAsync`, conflicto de concurrencia), `WalkConfiguration` (`xmin`), migración `AddWalkConcurrency`; `WalksEndpoints` (grupo walker) | `WalkerEndpointTests` (ejemplos 1–13), `WalkConcurrencyTests`, `WalkTests`, `GeoPointTests`, `AcceptWalkHandlerTests`, `ListAvailableWalksHandlerTests`, `ListAssignedWalksHandlerTests`, `GetWalkHandlerTests` |
+| waggo-mobile | `src/features/walker/**`, `src/shared/api/{devIdentity, httpClient}.ts`, `src/shared/ui/DetailRow.tsx`, `src/app/{_layout, index, paseador/index, paseador/[id]}.tsx`, `WelcomeScreen` | `walkerApi.test.ts`, `describeOffer.test.ts`, `WalkerHomeScreen.test.tsx`, `AssignedWalkScreen.test.tsx`, `devIdentity.test.ts`, `httpClient.test.ts`, `WelcomeScreen.test.tsx` |
