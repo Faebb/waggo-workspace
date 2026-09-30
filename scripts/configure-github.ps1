@@ -1,18 +1,18 @@
 <#
 .SYNOPSIS
   Applies the Waggo merge policy to the GitHub repos: squash merge only, PR title as the commit message,
-  auto-delete branches, and branch protection on main.
+  auto-delete branches, and branch protection on main (admins included).
 .DESCRIPTION
   Requires the GitHub CLI (gh) with Faebb as the active account (gh auth switch -u Faebb).
-  The free plan only allows branch protection on public repos, so the private waggo-workspace is left out.
-  Use -DryRun to print the calls without executing them.
+  The free plan only allows branch protection on public repos, so the private waggo-workspace only gets
+  the merge policy. Use -DryRun to print the calls without executing them.
 .EXAMPLE
   .\scripts\configure-github.ps1 -DryRun
   .\scripts\configure-github.ps1 -Repos Faebb/waggo-api
   .\scripts\configure-github.ps1 -Approvals 1      # once there is a second developer
 #>
 param(
-    [string[]]$Repos = @('Faebb/waggo-api', 'Faebb/waggo-mobile'),
+    [string[]]$Repos = @('Faebb/waggo-api', 'Faebb/waggo-mobile', 'Faebb/waggo-workspace'),
     # GitHub does not let authors approve their own PRs: 0 while there is a single developer.
     [ValidateRange(0, 6)][int]$Approvals = 0,
     [switch]$DryRun
@@ -25,11 +25,10 @@ if (-not $DryRun) {
     if ($account -ne 'Faebb') { throw "gh is using '$account'. Run: gh auth switch -u Faebb" }
 }
 
-# Status checks required on main, per repo (job names from .github/workflows).
+# Public repos get branch protection with these required checks (job names from .github/workflows).
 $requiredChecks = @{
-    'Faebb/waggo-api'       = @('build-test', 'conventional-title')
-    'Faebb/waggo-mobile'    = @('build-test', 'conventional-title')
-    'Faebb/waggo-workspace' = @()
+    'Faebb/waggo-api'    = @('build-test', 'conventional-title')
+    'Faebb/waggo-mobile' = @('build-test', 'conventional-title')
 }
 
 function Invoke-Gh([string[]]$ghArgs, [string]$body) {
@@ -54,10 +53,15 @@ foreach ($repo in $Repos) {
         '-f', 'squash_merge_commit_title=PR_TITLE',
         '-f', 'squash_merge_commit_message=PR_BODY')
 
-    # Branch protection on main: PR required with $Approvals approval(s), required checks, linear history.
+    if (-not $requiredChecks.ContainsKey($repo)) {
+        Write-Host "   OK (private: no branch protection)"
+        continue
+    }
+
+    # Branch protection on main, admins included: PR with $Approvals approval(s), required checks, linear history.
     $protection = @{
-        required_status_checks        = if ($requiredChecks[$repo].Count) { @{ strict = $true; contexts = $requiredChecks[$repo] } } else { $null }
-        enforce_admins                = $false
+        required_status_checks        = @{ strict = $true; contexts = $requiredChecks[$repo] }
+        enforce_admins                = $true
         required_pull_request_reviews = @{ required_approving_review_count = $Approvals; dismiss_stale_reviews = $true }
         restrictions                  = $null
         required_linear_history       = $true
