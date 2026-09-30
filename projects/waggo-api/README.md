@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 86ce07c. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 204939b. No editar aquí. -->
 
 # waggo-api
 
@@ -132,6 +132,8 @@ Lado del paseador (rol `walker`), como un conductor que ve solicitudes:
 | `POST` | `/api/v1/walks/{id}/finish` | El paseador termina el paseo (`InProgress → Completed`) |
 
 **Emergencia (RF-012)**: `POST /api/v1/walks/{id}/emergency` (dueño o paseador asignado; `message`, `latitude` y `longitude` opcionales) mientras el paseo está aceptado o en curso, y `GET /api/v1/walks/{id}/alerts` para ver las alertas, la más reciente primero. Se guardan en `tracking.walk_alerts`.
+
+**Alertas automáticas (RF-009, RF-010)**: al recibir cada lote de posiciones, la API crea alertas sin `raisedBy` cuando el paseo sale de un radio de 1,5 km alrededor de la recogida (`Geofence`, al cruzar el borde) o cuando el paseador lleva 10 minutos a menos de 30 m (`Anomaly`, una vez por detención). Se ven en el mismo `GET /api/v1/walks/{id}/alerts`. Los umbrales son provisionales (`WalkMonitor`).
 
 **Chat (RF-013)**: `POST /api/v1/walks/{id}/messages` `{ text }` y `GET /api/v1/walks/{id}/messages?after={messageId}` para el dueño y el paseador asignado. Se escribe mientras el paseo está aceptado o en curso (`422 Messages.ChatClosed` después) y se lee siempre. Tabla `messaging.walk_messages`.
 
