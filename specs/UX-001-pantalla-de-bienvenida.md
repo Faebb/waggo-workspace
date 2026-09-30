@@ -58,6 +58,9 @@ No aplica: la pantalla es estática.
 - El tema oscuro se aplica a toda la app: encabezados del `Stack`, cotizador y chips.
 - Mobile first: el contenido se limita a una columna de 480 px centrada en tablet y web.
 
+> [!note] Cambio posterior (RF-007)
+> Con el inicio del dueño (`/inicio`), la bienvenida tiene un solo botón, **"Empezar"**, que lleva al inicio. "Mis perros" y "Mis paseos" se abren desde ahí, y el precio se ve al pedir el paseo; el cotizador queda como ruta directa (`/cotizar`). El ejemplo 2 queda cubierto por "Empezar" (`WelcomeScreen.test.tsx`).
+
 > [!note] Primera versión descartada
 > La primera versión usaba fondo claro, verde, emojis y tarjetas centradas. En la revisión se vio genérica ("hecha con IA") y se cambió al diseño actual (ADR-013).
 
