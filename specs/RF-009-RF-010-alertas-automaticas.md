@@ -44,7 +44,7 @@ La plataforma vigila el paseo sola mientras recibe la ruta (RF-008). Si el paseo
 | Detención | 10 min dentro de 30 m | ⚠️ provisional (pregunta abierta del roadmap) |
 
 ## Diseño
-- **Domain**: `AlertKind` suma `Geofence` y `Anomaly`; `WalkAlert.Raise(kind, location, at)` para alertas del sistema (`RaisedBy` opcional); `Services/Tracking/WalkMonitor.Check(...)` devuelve las alertas a crear a partir de la recogida, la ruta previa, el lote nuevo y la última anomalía.
+- **Domain**: `AlertKind` suma `Geofence` y `Anomaly`; `WalkAlert.RaiseAutomatic(walkId, kind, location, at)` para alertas del sistema (`RaisedBy` opcional); `Services/Tracking/WalkMonitor.Check(...)` devuelve las alertas a crear a partir de la recogida, la ruta previa, el lote nuevo y la última anomalía.
 - **Application**: `RecordTrackHandler` llama a `WalkMonitor` y guarda las alertas.
 - **Infrastructure**: `raised_by` pasa a admitir nulos (migración `AllowSystemAlerts`).
 - **Mobile**: `AlertBanner` muestra "El paseo salió de la zona acordada" y "El paseo lleva 10 minutos detenido"; `raisedBy` pasa a admitir `null`.
