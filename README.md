@@ -154,7 +154,7 @@ flowchart LR
 Cada PR entra a `main` como **un solo commit** cuyo mensaje es el título del PR. Los commits `test` → `feat` → `refactor` quedan en la rama como evidencia del TDD.
 
 - El título del PR sigue Conventional Commits: `feat(pricing): quote fare by walk type (RF-019)`. Lo valida `.github/workflows/pr-title.yml` en cada repo.
-- `scripts/configure-github.ps1` configura GitHub cuando existan los repos: solo squash, título del PR como mensaje, borrado de ramas y protección de `main`. Prueba primero con `-DryRun`; usa `-Approvals 0` mientras haya un solo desarrollador.
+- `scripts/configure-github.ps1` configura `waggo-api` y `waggo-mobile` (públicos, licencia MIT): solo squash, título del PR como mensaje, borrado de ramas y protección de `main` con CI obligatorio. `waggo-workspace` es privado y queda sin protección, porque el plan gratuito no la permite en repos privados. Requiere `gh auth switch -u Faebb`; prueba primero con `-DryRun`. Usa `-Approvals 0` por defecto (un solo desarrollador).
 - Detalle: vault → `03 Desarrollo/Convenciones de Git y ramas.md`.
 
 ## Repos

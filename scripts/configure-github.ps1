@@ -3,21 +3,27 @@
   Applies the Waggo merge policy to the GitHub repos: squash merge only, PR title as the commit message,
   auto-delete branches, and branch protection on main.
 .DESCRIPTION
-  Requires the GitHub CLI (gh) authenticated with admin rights on the repos. Run it only once the repos
-  exist on GitHub. Use -DryRun to print the calls without executing them.
+  Requires the GitHub CLI (gh) with Faebb as the active account (gh auth switch -u Faebb).
+  The free plan only allows branch protection on public repos, so the private waggo-workspace is left out.
+  Use -DryRun to print the calls without executing them.
 .EXAMPLE
   .\scripts\configure-github.ps1 -DryRun
   .\scripts\configure-github.ps1 -Repos Faebb/waggo-api
-  .\scripts\configure-github.ps1 -Approvals 0      # while there is a single developer
+  .\scripts\configure-github.ps1 -Approvals 1      # once there is a second developer
 #>
 param(
-    [string[]]$Repos = @('Faebb/waggo-api', 'Faebb/waggo-mobile', 'Faebb/waggo-workspace'),
-    # GitHub does not let authors approve their own PRs: use 0 while there is a single developer.
-    [ValidateRange(0, 6)][int]$Approvals = 1,
+    [string[]]$Repos = @('Faebb/waggo-api', 'Faebb/waggo-mobile'),
+    # GitHub does not let authors approve their own PRs: 0 while there is a single developer.
+    [ValidateRange(0, 6)][int]$Approvals = 0,
     [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Stop'
+
+if (-not $DryRun) {
+    $account = gh api user --jq .login
+    if ($account -ne 'Faebb') { throw "gh is using '$account'. Run: gh auth switch -u Faebb" }
+}
 
 # Status checks required on main, per repo (job names from .github/workflows).
 $requiredChecks = @{
