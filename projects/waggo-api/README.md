@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 4b91517. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 687208a. No editar aquí. -->
 
 # waggo-api
 

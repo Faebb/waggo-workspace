@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ 5977991. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ f4f8ecd. No editar aquí. -->
 
 # waggo-mobile
 
@@ -36,16 +36,17 @@ npm start                   # a = Android, i = iOS, w = Web
 ## Arquitectura (feature-based)
 ```
 src/
-  app/                 → SOLO rutas de Expo Router (pantallas delgadas)
+  app/                 → SOLO rutas de Expo Router (pantallas delgadas): / bienvenida · /cotizar tarifa
   features/
-    pricing/           → un folder por módulo de negocio
+    onboarding/        → pantalla de bienvenida (UX-001)
+    pricing/           → un folder por módulo de negocio (cotizador RF-019)
       api/             → llamadas HTTP + esquemas Zod
       hooks/           → hooks de TanStack Query
       components/      → UI presentacional
       screens/         → pantallas que orquestan datos
       model/           → tipos y lógica pura
       index.ts         → API pública de la feature
-  shared/              → api (httpClient, ApiError), config (env), ui (componentes base, tema)
+  shared/              → api (httpClient, ApiError), config (env), ui (Button, ChipGroup, tema: colores, espaciados, radios, tipografía)
   test/                → utilidades de prueba
 ```
 - Reglas: `app → features → shared`; una feature solo se importa por su `index.ts`; las pruebas van junto al archivo.
