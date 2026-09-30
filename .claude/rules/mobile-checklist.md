@@ -15,7 +15,7 @@ Used by `mobile-test-writer`, `mobile-implementer` and `architecture-reviewer`. 
 - [ ] Named exports only (default only in `src/app/**`); `type` not `interface`; no `any`; `import type`.
 - [ ] UI text in Spanish; code in English.
 - [ ] Prettier: width 120, single quotes, trailing commas.
-- [ ] Visual design (ADR-013): mobile first, dark theme, yellow as the only accent, Helvetica, Swiss style (no emojis or decorative icons). Only tokens from `src/shared/ui/theme.ts`; no loose colors or font sizes.
+- [ ] Visual design (ADR-013): mobile first, dark theme, yellow as the only accent (red only for errors and emergencies), Helvetica, Swiss style (no emojis or decorative icons). Only tokens from `src/shared/ui/theme.ts`; no loose colors or font sizes.
 
 ## 3. API
 - [ ] Calls through `shared/api/httpClient.get(path, zodSchema, params)`; it unwraps `WaggoApiResponse` and returns `{ data, pagination, warnings, infos, traceId }`.
