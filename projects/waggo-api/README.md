@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 399e170. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 6889869. No editar aquí. -->
 
 # waggo-api
 
@@ -130,6 +130,8 @@ Lado del paseador (rol `walker`), como un conductor que ve solicitudes:
 | `POST` | `/api/v1/walks/{id}/track` | Lote de 1–100 posiciones `{ latitude, longitude, recordedAt }` mientras está en curso |
 | `GET` | `/api/v1/walks/{id}/track` | Ruta ordenada con `distanceKm` y `elapsedMinutes` (dueño o paseador) |
 | `POST` | `/api/v1/walks/{id}/finish` | El paseador termina el paseo (`InProgress → Completed`) |
+
+**Emergencia (RF-012)**: `POST /api/v1/walks/{id}/emergency` (dueño o paseador asignado; `message`, `latitude` y `longitude` opcionales) mientras el paseo está aceptado o en curso, y `GET /api/v1/walks/{id}/alerts` para ver las alertas, la más reciente primero. Se guardan en `tracking.walk_alerts`.
 
 Las posiciones se guardan en `tracking.track_points` (GiST en la posición, BRIN en el tiempo). Por ahora la app consulta la ruta cada pocos segundos; SignalR (RNF-007) llegará en otro slice.
 
