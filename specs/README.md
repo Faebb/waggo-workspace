@@ -13,6 +13,7 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 
 ## Convenciones
 - Archivo: `RF-XXX-<slug-en-español>.md`. Si un RF se parte en slices: `RF-XXX-<slug>-<slice>.md`.
+- Una pantalla o flujo que no es un RF del SRS (por ejemplo, la bienvenida) usa el prefijo `UX-XXX` con la misma plantilla y explica en la spec a qué RF da entrada.
 - Base: [`_template.md`](_template.md).
 - La tabla de ejemplos es la fuente de las pruebas: cada fila se convierte en al menos una prueba.
 - Valores de negocio sin confirmar se marcan `⚠️ provisional` y generan una pregunta al PO.
@@ -21,3 +22,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | Spec | RF | Módulo | Sprint | Estado |
 |---|---|---|---|---|
 | [RF-019 Cotización de tarifa](RF-019-cotizacion-tarifa.md) | RF-019, RF-018 (cálculo) | `Pricing` | 0 | Implementada |
+| [UX-001 Pantalla de bienvenida](UX-001-pantalla-de-bienvenida.md) | — (transversal, solo mobile) | `Onboarding` | 1 | Implementada |
