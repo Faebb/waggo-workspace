@@ -32,3 +32,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-009 + RF-010 Alertas automáticas](RF-009-RF-010-alertas-automaticas.md) | RF-009, RF-010 | `Tracking` | 6 (adelantado) | Implementada |
 | [RF-006 Matching por cercanía](RF-006-matching-por-cercania.md) | RF-006 | `Walks` | 4 | Implementada |
 | [RF-002 + RF-003 Paseadores verificados](RF-002-RF-003-paseadores-verificados.md) | RF-002, RF-003 (verificación manual) | `Identity` | 2 | Implementada |
+| [RF-015 – RF-018 Pagos con escrow](RF-015-RF-018-pagos-con-escrow.md) | RF-015 – RF-018 (pasarela simulada) | `Payments` | 7 (adelantado) | Implementada |
