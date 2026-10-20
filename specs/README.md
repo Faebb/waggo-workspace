@@ -23,3 +23,5 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 |---|---|---|---|---|
 | [RF-019 Cotización de tarifa](RF-019-cotizacion-tarifa.md) | RF-019, RF-018 (cálculo) | `Pricing` | 0 | Implementada |
 | [UX-001 Pantalla de bienvenida](UX-001-pantalla-de-bienvenida.md) | — (transversal, solo mobile) | `Onboarding` | 1 | Implementada |
+| [RF-004 Perfil de mascota](RF-004-perfil-de-mascota.md) | RF-004, RNF-003 | `Pets` | 3 (adelantado) | Implementada |
+| [RF-007 Solicitud de paseo — dueño](RF-007-solicitud-de-paseo-dueno.md) | RF-007 (slice dueño) | `Walks` | 3 | Implementada |

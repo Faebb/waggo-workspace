@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 687208a. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 47003fe. No editar aquí. -->
 
 # waggo-api
 
@@ -27,7 +27,8 @@ docker compose up -d db
 dotnet run --project Waggo.Api      # http://localhost:5080
 ```
 - OpenAPI (solo Development): `/openapi/v1.json`.
-- En Development no se necesita token: un usuario de desarrollo con los roles `owner`, `walker` y `admin` firma cada request. Para probar otro rol envía el header `X-Dev-Roles: walker`.
+- En Development no se necesita token: un usuario de desarrollo con los roles `owner`, `walker` y `admin` firma cada request. Para probar otro rol envía el header `X-Dev-Roles: walker`; para actuar como otro usuario, `X-Dev-User-Id: otro-dueno`.
+- En Development y en las pruebas, la API aplica las migraciones pendientes al arrancar. En otros ambientes se aplican como un paso del despliegue.
 - Health checks: `/health/live` (el proceso responde) y `/health/ready` (PostgreSQL disponible).
 
 ## Comandos
@@ -50,6 +51,7 @@ Waggo.sln
 └─ Tests/
    ├─ Waggo.Domain.UnitTests
    ├─ Waggo.Application.UnitTests
+   ├─ Waggo.Infrastructure.UnitTests (cifrado de columnas)
    ├─ Waggo.Api.UnitTests          (validadores de DTO, middleware, respuestas)
    ├─ Waggo.Api.IntegrationTests   (API completa + PostgreSQL real; requiere Docker)
    └─ Waggo.ArchitectureTests      (reglas de dependencia entre capas)
@@ -95,11 +97,36 @@ Commits: [Conventional Commits](https://www.conventionalcommits.org/) — `test(
 ```
 Las tarifas y la comisión son **provisionales** y se configuran en `appsettings.json › Pricing`.
 
+## Mascotas (RF-004)
+Endpoints del dueño (rol `owner`), siempre limitados a sus propios perros:
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `POST` | `/api/v1/pets` | Registra un perro: `name`, `size` (`Small`, `Medium`, `Large`) y opcionales `breed`, `birthDate`, `weightKg`, `medicalNotes` |
+| `GET` | `/api/v1/pets` | Lista mis perros ordenados por nombre (máximo 10) |
+| `GET` | `/api/v1/pets/{id}` | Detalle de uno de mis perros; `404 Pets.NotFound` si no existe o es de otro dueño |
+
+## Paseos (RF-007, lado del dueño)
+Como pedir un Uber: el dueño elige de 1 a 3 de sus perros, tipo, duración, punto de recogida y hora (ahora o hasta 14 días), y el precio queda congelado con la tarifa vigente.
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `POST` | `/api/v1/walks` | Pide un paseo: `petIds`, `walkType`, `durationMinutes`, `pickupAddress`, `latitude`, `longitude` y opcionales `scheduledFor` (vacío = ahora) y `notes` |
+| `GET` | `/api/v1/walks` | Mis paseos, el más reciente primero |
+| `GET` | `/api/v1/walks/{id}` | Detalle (la app lo consulta para saber cuándo lo acepta un paseador) |
+| `POST` | `/api/v1/walks/{id}/cancel` | Cancela un paseo `Requested` o `Accepted`; si no, `422 Walks.CannotCancel` |
+
+Estados: `Requested → Accepted → InProgress → Completed`, o `Cancelled`. El punto de recogida se guarda como `geography(Point, 4326)` de PostGIS con índice GiST, para el matching por cercanía (RF-006).
+
+## Base de datos y datos sensibles
+- EF Core + Npgsql con nombres `snake_case` y un schema por módulo (`pets`, `walks`, …). Las posiciones usan PostGIS a través de NetTopologySuite; el dominio solo conoce su `GeoPoint`.
+- Las columnas sensibles (hoy `pets.medical_notes`) se guardan **cifradas con AES-256-GCM** (RNF-003). La llave es `Encryption:Key`: 32 bytes aleatorios en base64 (`openssl rand -base64 32`). En Development viene en `appsettings.Development.json`; en cualquier otro ambiente se configura con un secreto o con la variable `Encryption__Key`, y la API no arranca sin ella.
+
 ## Migraciones (EF Core)
+`dotnet-ef` está en el manifiesto local de herramientas (`dotnet-tools.json`):
 ```bash
-dotnet tool install --global dotnet-ef
+dotnet tool restore
 dotnet ef migrations add <Nombre> -p Waggo.Infrastructure -s Waggo.Api -o Persistence/Migrations
 ```
+Las migraciones son código generado: `.editorconfig` las excluye de las reglas de estilo.
 
 ## Licencia
 [MIT](LICENSE)
