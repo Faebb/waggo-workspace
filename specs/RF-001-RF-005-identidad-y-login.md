@@ -1,7 +1,7 @@
 ---
 rf: RF-001, RF-005
 titulo: Registro con confirmación por correo y login con segundo factor
-estado: Lista
+estado: Implementada
 modulo: Identity
 sprint: 1
 prioridad: Alta
@@ -18,10 +18,10 @@ Como **dueño o paseador** quiero **crear una cuenta y luego iniciar sesión de 
 
 ## Criterios de aceptación
 - [x] Cualquiera se registra con correo y contraseña (RF-001); la cuenta queda inactiva hasta confirmar el correo.
-- [ ] El login pide contraseña y, si es correcta, un segundo factor (código al correo) antes de entregar sesión (RF-005).
-- [ ] Los intentos fallidos de contraseña y de código quedan registrados (RF-005) y limitados.
-- [ ] La sesión se mantiene con un access token corto y un refresh token rotativo (RNF-002); ninguno de los dos vive en la base de datos en texto plano.
-- [ ] El rol `walker` se obtiene solo al ser un paseador aprobado (RF-002/RF-003, ya implementado); el registro de este spec no crea paseadores.
+- [x] El login pide contraseña y, si es correcta, un segundo factor (código al correo) antes de entregar sesión (RF-005).
+- [x] Los intentos fallidos de contraseña y de código quedan registrados (RF-005) y limitados.
+- [x] La sesión se mantiene con un access token corto y un refresh token rotativo (RNF-002); ninguno de los dos vive en la base de datos en texto plano.
+- [x] El rol `walker` se obtiene solo al ser un paseador aprobado (RF-002/RF-003, ya implementado); el registro de este spec no crea paseadores.
 
 ## Tabla de ejemplos
 Cada fila es al menos una prueba. Incluye casos felices, límites y errores.
@@ -125,9 +125,9 @@ Response `200`: misma forma que `login/verify`.
 | Cuenta sin confirmar | `Identity.AccountNotConfirmed` | 400 | Confirma tu correo antes de iniciar sesión. |
 | Código de 2FA inválido | `Identity.InvalidCode` | 400 | El código no es correcto. |
 | Código de 2FA expirado | `Identity.CodeExpired` | 400 | El código expiró, pide uno nuevo. |
-| Demasiados intentos | `Identity.TooManyAttempts` | 429 | Demasiados intentos, espera 15 minutos. |
+| Demasiados intentos | `Identity.TooManyAttempts` | 422 (`ErrorType.BusinessRule`, no 429: eso es solo para el *rate limiter* de infraestructura) | Demasiados intentos, espera 15 minutos. |
 | Challenge no encontrado | `Identity.ChallengeNotFound` | 400 | Vuelve a iniciar sesión. |
-| Refresh token inválido | `Identity.RefreshTokenInvalid` | 400 | Tu sesión expiró, inicia sesión de nuevo. |
+| Refresh token inválido | `Identity.RefreshTokenInvalid` | 401 (`ErrorType.Unauthorized`) | Tu sesión expiró, inicia sesión de nuevo. |
 
 ### Excepciones
 | Situación | Excepción | `code` | HTTP |
@@ -186,5 +186,9 @@ Backend, en dos slices (dos PR):
 |---|---|---|
 | waggo-api | `Waggo.Domain/{Entities,Errors}/Identity/`, `Waggo.Application/{Identity,Common/Interfaces/Identity}/`, `Waggo.Infrastructure/{Services,Persistence/Configurations}/Identity/`, `Waggo.Api/Endpoints/Identity/`, migración `AddUsers` | `Tests/Waggo.Domain.UnitTests/Entities/Identity/UserTests`, `Waggo.Application.UnitTests/Identity/Commands/{Register,ConfirmEmail}/*HandlerTests`, `Waggo.Infrastructure.UnitTests/Services/Identity/BCryptPasswordHasherTests`, `Waggo.Api.UnitTests/Endpoints/Identity/Validators/RegisterRequestValidatorTests`, `Waggo.Api.IntegrationTests/Endpoints/Identity/IdentityEndpointTests` |
 
-### Slice B — Login, 2FA, refresh (RF-005) — pendiente
+### Slice B — Login, 2FA, refresh (RF-005) ✅
+| Repo | Archivos | Pruebas |
+|---|---|---|
+| waggo-api | `Waggo.Domain/Entities/Identity/{LoginChallenge,RefreshToken}.cs` + lockout en `User.cs`; `Waggo.Application/Identity/Commands/{Login,VerifyLoginCode,RefreshSession}/`; `Waggo.Infrastructure/Services/Identity/{JwtTokenService,LoginChallengeRepository,RefreshTokenRepository}.cs`, `Options/Identity/JwtOptions.cs`; `Waggo.Api/Endpoints/Identity/` (login, login/verify, refresh) + `AddWaggoAuthentication` reescrito a `IssuerSigningKey`; migración `AddLoginAndRefreshTokens` | `Waggo.Domain.UnitTests/Entities/Identity/{LoginChallengeTests,RefreshTokenTests}`, handlers de `Waggo.Application.UnitTests/Identity/Commands/*`, `Waggo.Infrastructure.UnitTests/Services/Identity/{JwtTokenServiceTests,SecureTokenGeneratorTests}`, validators de `Waggo.Api.UnitTests`, `Waggo.Api.IntegrationTests/Endpoints/Identity/{LoginEndpointTests,JwtPipelineTests}` (esta última con un segundo `WebApplicationFactory` sin usuario de desarrollo, para probar el pipeline JWT real de punta a punta) |
+
 ### Mobile — pendiente (pantallas, almacenamiento seguro del token, reemplazo de `devIdentity`)
