@@ -61,6 +61,9 @@ No aplica: la pantalla es estática.
 > [!note] Cambio posterior (RF-007)
 > Con el inicio del dueño (`/inicio`), la bienvenida tiene un solo botón, **"Empezar"**, que lleva al inicio. "Mis perros" y "Mis paseos" se abren desde ahí, y el precio se ve al pedir el paseo; el cotizador queda como ruta directa (`/cotizar`). El ejemplo 2 queda cubierto por "Empezar" (`WelcomeScreen.test.tsx`).
 
+> [!note] Cambio posterior (RF-007, paseador)
+> La bienvenida ofrece dos entradas, como una app de viajes: **"Quiero pasear a mi perro"** (inicio del dueño) y **"Soy paseador"** (`/paseador`).
+
 > [!note] Primera versión descartada
 > La primera versión usaba fondo claro, verde, emojis y tarjetas centradas. En la revisión se vio genérica ("hecha con IA") y se cambió al diseño actual (ADR-013).
 

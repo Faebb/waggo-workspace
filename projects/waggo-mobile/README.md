@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ 04dd627. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ e95cabf. No editar aquí. -->
 
 # waggo-mobile
 
@@ -14,6 +14,9 @@ Expo (SDK 57) · React Native · TypeScript · Expo Router · TanStack Query · 
 - Node.js 22 LTS
 - App **Expo Go** en tu teléfono, o emulador Android / simulador iOS
 - `waggo-api` corriendo (ver su README)
+
+## Dueño y paseador en desarrollo
+Mientras no exista el login (ADR-011), la app elige su identidad con los headers de desarrollo de waggo-api: `/paseador` y sus pantallas van como el paseador `dev-walker`, y el resto como el dueño `dev-owner` (`src/shared/api/devIdentity.ts`). Desde la bienvenida: "Quiero pasear a mi perro" o "Soy paseador". Se borra cuando llegue el login.
 
 ## Inicio rápido
 ```bash
@@ -36,11 +39,14 @@ npm start                   # a = Android, i = iOS, w = Web
 ## Arquitectura (feature-based)
 ```
 src/
-  app/                 → SOLO rutas de Expo Router (pantallas delgadas): / bienvenida · /inicio · /paseos · /paseos/nuevo · /paseos/[id] · /mascotas · /mascotas/nueva · /cotizar
+  app/                 → SOLO rutas de Expo Router (pantallas delgadas): / bienvenida · /inicio · /paseos · /paseos/nuevo · /paseos/[id] · /mascotas · /mascotas/nueva · /paseador · /paseador/[id] · /paseos/[id]/chat · /paseador/[id]/chat · /cotizar
   features/
     onboarding/        → pantalla de bienvenida (UX-001)
     home/              → inicio del dueño, estilo Uber: "¿Quién sale a pasear hoy?" (RF-007)
     walks/             → pedir paseo, estado del paseo y mis paseos (RF-007)
+    walker/            → lado del paseador: solicitudes cercanas, aceptar, iniciar y terminar (RF-007, RF-008)
+    tracking/          → ruta en vivo (SVG), métricas, envío de la posición y emergencias (RF-008, RF-011, RF-012)
+    messaging/         → chat del dueño con el paseador durante el paseo (RF-013)
     pets/              → mis perros y agregar perro (RF-004)
     pricing/           → un folder por módulo de negocio (cotizador RF-019)
       api/             → llamadas HTTP + esquemas Zod

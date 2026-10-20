@@ -1,4 +1,4 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 47003fe. No editar aquí. -->
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 86ce07c. No editar aquí. -->
 
 # waggo-api
 
@@ -113,6 +113,29 @@ Como pedir un Uber: el dueño elige de 1 a 3 de sus perros, tipo, duración, pun
 | `GET` | `/api/v1/walks` | Mis paseos, el más reciente primero |
 | `GET` | `/api/v1/walks/{id}` | Detalle (la app lo consulta para saber cuándo lo acepta un paseador) |
 | `POST` | `/api/v1/walks/{id}/cancel` | Cancela un paseo `Requested` o `Accepted`; si no, `422 Walks.CannotCancel` |
+
+Lado del paseador (rol `walker`), como un conductor que ve solicitudes:
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/api/v1/walks/available?latitude=&longitude=` | Solicitudes abiertas de otros usuarios con lo que gana el paseador; con ubicación, las más cercanas primero y `distanceKm` |
+| `POST` | `/api/v1/walks/{id}/accept` | Acepta; el primero gana. `409 Walks.NotAvailable` si ya la tomó otro, `422 Walks.OwnWalk` si es su propio paseo |
+| `GET` | `/api/v1/walks/assigned` | Paseos que aceptó |
+
+`GET /api/v1/walks/{id}` responde al dueño y al paseador asignado. Dos aceptaciones simultáneas no pueden ganar ambas: `walks` usa `xmin` de PostgreSQL como token de concurrencia optimista.
+
+## Paseo en vivo (RF-008, RF-011)
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `POST` | `/api/v1/walks/{id}/start` | El paseador asignado inicia el paseo (`Accepted → InProgress`) |
+| `POST` | `/api/v1/walks/{id}/track` | Lote de 1–100 posiciones `{ latitude, longitude, recordedAt }` mientras está en curso |
+| `GET` | `/api/v1/walks/{id}/track` | Ruta ordenada con `distanceKm` y `elapsedMinutes` (dueño o paseador) |
+| `POST` | `/api/v1/walks/{id}/finish` | El paseador termina el paseo (`InProgress → Completed`) |
+
+**Emergencia (RF-012)**: `POST /api/v1/walks/{id}/emergency` (dueño o paseador asignado; `message`, `latitude` y `longitude` opcionales) mientras el paseo está aceptado o en curso, y `GET /api/v1/walks/{id}/alerts` para ver las alertas, la más reciente primero. Se guardan en `tracking.walk_alerts`.
+
+**Chat (RF-013)**: `POST /api/v1/walks/{id}/messages` `{ text }` y `GET /api/v1/walks/{id}/messages?after={messageId}` para el dueño y el paseador asignado. Se escribe mientras el paseo está aceptado o en curso (`422 Messages.ChatClosed` después) y se lee siempre. Tabla `messaging.walk_messages`.
+
+Las posiciones se guardan en `tracking.track_points` (GiST en la posición, BRIN en el tiempo). Por ahora la app consulta la ruta cada pocos segundos; SignalR (RNF-007) llegará en otro slice.
 
 Estados: `Requested → Accepted → InProgress → Completed`, o `Cancelled`. El punto de recogida se guarda como `geography(Point, 4326)` de PostGIS con índice GiST, para el matching por cercanía (RF-006).
 
