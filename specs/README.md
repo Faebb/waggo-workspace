@@ -29,3 +29,8 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-008 Paseo en vivo](RF-008-paseo-en-vivo.md) | RF-008, RF-011 | `Tracking` | 5 (adelantado) | Implementada |
 | [RF-012 Alerta de emergencia](RF-012-alerta-de-emergencia.md) | RF-012 (sin push) | `Tracking` | 6 (adelantado) | Implementada |
 | [RF-013 Chat del paseo](RF-013-chat-del-paseo.md) | RF-013 | `Messaging` | 8 (adelantado) | Implementada |
+| [RF-009 + RF-010 Alertas automáticas](RF-009-RF-010-alertas-automaticas.md) | RF-009, RF-010 | `Tracking` | 6 (adelantado) | Implementada |
+| [RF-006 Matching por cercanía](RF-006-matching-por-cercania.md) | RF-006 | `Walks` | 4 | Implementada |
+| [RF-002 + RF-003 Paseadores verificados](RF-002-RF-003-paseadores-verificados.md) | RF-002, RF-003 (verificación manual) | `Identity` | 2 | Implementada |
+| [RF-015 – RF-018 Pagos con escrow](RF-015-RF-018-pagos-con-escrow.md) | RF-015 – RF-018 (pasarela simulada) | `Payments` | 7 (adelantado) | Implementada |
+| [RF-014 Notificaciones del recorrido](RF-014-notificaciones-del-recorrido.md) | RF-014 (en la app, sin push) | `Messaging` | 6 | Implementada |
