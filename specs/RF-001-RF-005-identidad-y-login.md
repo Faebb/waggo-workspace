@@ -191,4 +191,10 @@ Backend, en dos slices (dos PR):
 |---|---|---|
 | waggo-api | `Waggo.Domain/Entities/Identity/{LoginChallenge,RefreshToken}.cs` + lockout en `User.cs`; `Waggo.Application/Identity/Commands/{Login,VerifyLoginCode,RefreshSession}/`; `Waggo.Infrastructure/Services/Identity/{JwtTokenService,LoginChallengeRepository,RefreshTokenRepository}.cs`, `Options/Identity/JwtOptions.cs`; `Waggo.Api/Endpoints/Identity/` (login, login/verify, refresh) + `AddWaggoAuthentication` reescrito a `IssuerSigningKey`; migración `AddLoginAndRefreshTokens` | `Waggo.Domain.UnitTests/Entities/Identity/{LoginChallengeTests,RefreshTokenTests}`, handlers de `Waggo.Application.UnitTests/Identity/Commands/*`, `Waggo.Infrastructure.UnitTests/Services/Identity/{JwtTokenServiceTests,SecureTokenGeneratorTests}`, validators de `Waggo.Api.UnitTests`, `Waggo.Api.IntegrationTests/Endpoints/Identity/{LoginEndpointTests,JwtPipelineTests}` (esta última con un segundo `WebApplicationFactory` sin usuario de desarrollo, para probar el pipeline JWT real de punta a punta) |
 
-### Mobile — pendiente (pantallas, almacenamiento seguro del token, reemplazo de `devIdentity`)
+### Mobile ✅
+| Repo | Archivos | Pruebas |
+|---|---|---|
+| waggo-mobile | `src/features/auth/{api,hooks,screens}` (registro, confirmación, login, 2FA); `src/shared/auth/{session,refreshSession,secureStorage,useHydrateSession}`; `src/shared/api/httpClient.ts` (Bearer + refresh silencioso en 401); rutas `/registro`, `/confirmar`, `/login`, `/verificar`; reemplazó `devIdentity` | `*.test.ts[x]` junto a cada archivo |
+
+> [!info] Hallazgo al probar en el navegador (no visible solo con Jest)
+> `expo-secure-store` rechaza claves con `:` (se cambió a `waggo.session`) y no tiene implementación real en web — `secureStorage.ts` cae a `AsyncStorage` cuando `Platform.OS === 'web'`.
