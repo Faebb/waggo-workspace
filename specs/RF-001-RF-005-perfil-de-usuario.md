@@ -21,11 +21,11 @@ actualizado: 2026-10-26
 Como **dueño o paseador** quiero **ver y controlar los datos de mi cuenta** para **saber qué información tiene Waggo de mí y poder cambiarla o cerrarla cuando quiera**.
 
 ## Qué se quiere (sin refinar aún)
-- Ver y editar el correo de la cuenta.
-- Cambiar contraseña (reutiliza `PasswordPolicy`, ya existente en la recuperación de contraseña).
+- Ver el correo de la cuenta (cambiarlo ya está implementado: `RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md`, slice D).
+- ~~Cambiar contraseña~~ — implementado, ver `RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md` (slice C).
 - Ver qué proveedores de login tiene vinculados (correo siempre; Google/Microsoft cuando exista `RF-001-RF-005-login-social-google-microsoft.md`) y poder desvincular uno si queda al menos otro método activo.
 - Ver si es un paseador verificado (hoy `WalkerGate` lo sabe pero no se muestra en ningún otro lugar de la app).
-- Cerrar sesión.
+- ~~Cerrar sesión~~ — implementado, ver `RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md` (slice B).
 - Eliminar la cuenta.
 
 ## Preguntas abiertas para el PO
