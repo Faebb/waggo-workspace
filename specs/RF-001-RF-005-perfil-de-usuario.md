@@ -35,3 +35,6 @@ Como **dueño o paseador** quiero **ver y controlar los datos de mi cuenta** par
 
 ## Trazabilidad
 Se completa al implementar.
+
+> [!note] Propuesta de diseño (2026-10-27): qué falta de la pantalla 23–25
+> El selector de tema (Claro/Oscuro, `radiogroup`) quedó solo en **Configuración › Preferencias** (se quitó de la barra global). Siguen sin implementar, porque no hay endpoint ni spec lista: "Eliminar mi cuenta" (hoja con "ELIMINAR"; falta `DELETE /api/v1/users/me` y decidir borrado o desactivación), "Métodos para entrar" con Vincular/Desvincular (falta el login social y `GET/DELETE /api/v1/users/me/logins`), bloque "Paseador" en Cuenta y seguridad, y la sección **Ayuda** ("Centro de ayuda" y "Términos y privacidad": faltan los contenidos y su spec; el texto legal del registro hoy los menciona sin enlace).

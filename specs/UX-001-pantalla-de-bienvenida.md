@@ -6,7 +6,7 @@ modulo: Onboarding
 sprint: 1
 prioridad: Media
 repos: [waggo-mobile]
-actualizado: 2026-09-30
+actualizado: 2026-10-26
 ---
 
 # UX-001 — Pantalla de bienvenida
@@ -64,6 +64,16 @@ No aplica: la pantalla es estática.
 > [!note] Cambio posterior (RF-007, paseador)
 > La bienvenida ofrece dos entradas, como una app de viajes: **"Quiero pasear a mi perro"** (inicio del dueño) y **"Soy paseador"** (`/paseador`).
 
+> [!note] Cambio posterior (propuesta de diseño, 2026-10-26; rompe ejemplos 1 y 3)
+> Implementado según `design/propuesta/07` · pantalla 1 y `08-marca.md`, por orden del PO:
+> - **Cabecera**: el cuadro con la pata y el texto "Waggo" se reemplazan por el **logo completo** del corgi (150 px, centrado; en tema oscuro, la medalla crema). El logo es una sola imagen con etiqueta "Waggo" y es **provisional** (recoloreado del boceto, `assets/brand/`), hasta que exista el vector.
+> - **Copy**: antetítulo "PASEADORES VERIFICADOS, EN VIVO", apoyo "Pide un paseo como pides un viaje: ves al paseador en el mapa y pagas al final." y frases nuevas de los pilares (`model/valuePillars.ts`); los pilares ya no van numerados sino con ícono en círculo.
+> - **Entradas**: "Pedir un paseo" (dueño), "Quiero ser paseador" y el enlace "Ya tengo cuenta · Iniciar sesión" (`/login`). El ejemplo 3 (aviso "muy pronto" y sin botón de inicio de sesión) queda obsoleto: el registro y el login ya existen.
+> - Pruebas: `WelcomeScreen.test.tsx` (logo con rol `image` y nombre "Waggo", tres entradas).
+
+> [!note] Cambio posterior (barra de navegación, 2026-10-27)
+> La barra global del `Stack` (`src/app/_layout.tsx`) ya no muestra "Waggo" ni el selector de tema: solo la flecha de volver (modo `minimal`), como en todas las pantallas de `design/propuesta/07`. En el flujo de entrada (login, registro, confirmar, olvidé y restablecer contraseña) la barra lleva además la cabeza del corgi a la derecha (`AuthBarLogo`); el título queda en el contenido (`AuthHeader`). El selector de tema (Claro/Oscuro, `radiogroup`) vive en **Configuración › Preferencias**, de ambos roles (pantalla 23). Consecuencia: sin sesión no hay selector de tema (la app arranca en claro, ADR-018); ver preguntas abiertas.
+
 > [!note] Primera versión descartada
 > La primera versión usaba fondo claro, verde, emojis y tarjetas centradas. En la revisión se vio genérica ("hecha con IA") y se cambió al diseño actual (ADR-013).
 
@@ -80,6 +90,7 @@ No aplica: la pantalla es estática.
 ## Preguntas abiertas para el PO
 - [ ] ¿Textos definitivos del titular y los pilares?
 - [ ] ¿Logo oficial? Hoy la marca es un cuadro amarillo junto a la palabra "Waggo".
+- [ ] ¿Debe poder cambiarse el tema antes de iniciar sesión (bienvenida o login)? El diseño solo lo pone en Configuración.
 
 ## Trazabilidad
 | Repo | Archivos | Pruebas |

@@ -196,3 +196,6 @@ Backend, en dos slices (dos PR):
 
 > [!info] Hallazgo al probar en el navegador (no visible solo con Jest)
 > `expo-secure-store` rechaza claves con `:` (se cambió a `waggo.session`) y no tiene implementación real en web — `secureStorage.ts` cae a `AsyncStorage` cuando `Platform.OS === 'web'`.
+
+> [!note] Cambio posterior (propuesta de diseño, 2026-10-27)
+> Barra de las pantallas de entrada (login, registro, confirmar, olvidé y restablecer contraseña) según `design/propuesta/07` · 2–5: flecha de volver a la izquierda y la cabeza del corgi a la derecha (`shared/ui/AuthHeader` › `AuthBarLogo`, desde `src/app/_layout.tsx`); el título y el apoyo van en el contenido (`AuthHeader`). Se quitaron de la barra "Waggo" y el selector de tema (ahora en Configuración). Sin implementar por falta de API o spec: "Continuar con Google/Microsoft" (spec `RF-001-RF-005-login-social-google-microsoft.md`, sin endpoint), "Reenviar enlace" en cuenta sin confirmar y la cuenta regresiva de "Demasiados intentos" (la API no devuelve el tiempo restante).

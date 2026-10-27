@@ -6,7 +6,7 @@ modulo: Walks
 sprint: 3
 prioridad: Alta
 repos: [waggo-api, waggo-mobile]
-actualizado: 2026-09-30
+actualizado: 2026-10-27
 ---
 
 # RF-007 (slice paseador) — Ver solicitudes y aceptar
@@ -95,6 +95,28 @@ Como **paseador** quiero **ver los paseos pedidos cerca de mí y lo que voy a ga
 - [ ] ¿Radio máximo para mostrar solicitudes?
 - [ ] ¿El paseador puede soltar un paseo ya aceptado? ¿Con penalización?
 - [ ] ¿Qué pasa si nadie acepta en X minutos? (¿se cancela sola?, ¿se avisa al dueño?)
+
+> [!note] Cambio posterior (propuesta de diseño, 2026-10-27; rompe ADR-019 en el lado del paseador)
+> Por orden del PO, implementado según `design/propuesta/07` · pantallas 28–33. **Sin cambios de API.**
+> - **Cuatro pestañas** para el paseador (`(walker-tabs)`): Inicio (`/paseador`, solicitudes), Paseos (`/paseador/paseos`, `WalkerWalksScreen`: En curso, Próximos, Historial sobre `GET /walks/assigned`), Ganancias (`/paseador/ganancias`, `EarningsScreen` sobre `GET /payments/earnings`, RF-017) y Configuración. ADR-019 decía dos (Inicio y Configuración): **hay que actualizar el ADR en el vault** (no se tocó en esta corrida).
+> - **Inicio**: la lista de "Tus paseos" y la tarjeta de ganancias salen de Inicio (van a sus pestañas); arriba queda el paseo en curso o aceptado. Sin ubicación, aviso "Comparte tu ubicación" con "Ver las más cercanas"; con permiso negado, aviso para reintentar. Vacío: "No hay solicitudes cerca por ahora". Si otro paseador la tomó (409), además del mensaje de la API la tarjeta queda atenuada como "Ya no disponible".
+> - **Paseo asignado**: "Abrir en Maps" (enlace universal de Google Maps con las coordenadas de la recogida, sin costo para Waggo), "Terminar paseo" pide confirmación y al terminar muestra "¡Paseo terminado!" + "Ganaste $ X" y "Ver más solicitudes".
+> - **Verificación** (`WalkerGate`): línea de tiempo de tres pasos (Datos enviados · Revisamos tu documento · Listo para pasear).
+> - **Pendiente**: mapa con píldoras de precio (proveedor sin decidir), estado "Disponible" y ETA (`nueva — requiere spec`), mostrar zona en vez de dirección antes de aceptar (pregunta abierta), "Escribir a soporte" (canal sin spec).
+
+> [!note] Cambio posterior (decisión del PO: mapas con OpenStreetMap, 2026-10-27)
+> Cierra el pendiente del mapa. **Sin cambios de API.** Borrador de ADR: [`_adr-borrador-mapas-openstreetmap.md`](_adr-borrador-mapas-openstreetmap.md).
+> - **Inicio del paseador**: arriba de la lista, mapa de OpenStreetMap con una **píldora de precio** por solicitud ("$ 18.400") dibujada en el **centro de la cuadra** (coordenadas redondeadas a 3 decimales, ~110 m), no en la casa, y la posición del paseador cuando la comparte. Tocar una píldora la resalta y sube su tarjeta al primer lugar. Resumen para lectores de pantalla ("Mapa con 2 solicitudes…") y "Ver como lista". Los avisos de ubicación no cambian.
+> - **Paseo aceptado**: mapa con la recogida; "Ver mi distancia a la recogida" pide la ubicación y dibuja un tramo **punteado en línea recta** hasta la recogida ("estás a 450 m en línea recta"). No hay ruta por calles ni ETA (necesitarían un servicio de rutas: `nueva — requiere spec`). "Abrir en Maps" (Google Maps por enlace) se conserva.
+> - **Paseo en curso**: mapa con el recorrido, la zona acordada y la recogida (`WalkMap`, RF-008) y el aviso fijo "Mantén Waggo abierta durante el paseo: si bloqueas el teléfono o cambias de app, dejamos de compartir tu ruta con el dueño." (no hay rastreo en segundo plano; el permiso "Siempre" del diseño queda como pregunta para el PO).
+> - **Sigue pendiente**: grupos de píldoras cercanas, estado "Disponible", ETA, zona en vez de dirección en la tarjeta antes de aceptar.
+
+> [!note] Cambio posterior (propuesta de diseño 07 · 28–30, hoja de terminar, 2026-10-27)
+> **Sin cambios de API.**
+> - **Terminar paseo** (`AssignedWalkScreen`): bajo el botón, "Tócalo al entregar a los perros en la recogida."; la confirmación es una **hoja inferior** (`shared/ui/BottomSheet`): "¿Terminar el paseo?" · "Confirma que entregaste a los perros en [dirección]. Al terminar se cobra el pago y recibes $ X." · "Sí, terminar paseo" / "Seguir paseando". Se cierra con atrás, Escape o el fondo, salvo mientras termina. Si la API falla, la hoja sigue abierta con el `message` de cada error. El aviso "Estás a 1,1 km de la recogida" del diseño sigue `nueva — requiere spec`.
+> - **"Abrir en Maps"**: si el teléfono no puede abrir el enlace, "No pudimos abrir Maps. Busca la dirección de la recogida en tu app de mapas."
+> - **Emergencia**: la hoja de RF-012 ofrece "Escribir al dueño" (chat) tras enviar.
+> - **Solicitudes** (`WalkerHomeScreen`, revisión): si la primera carga falla solo se ve "No pudimos cargar las solicitudes." + "Intentar de nuevo" (sin mapa vacío); si falla un refresco, se conserva la lista con "No pudimos actualizar las solicitudes. Mostramos lo último que recibimos.".
 
 ## Trazabilidad
 | Repo | Archivos | Pruebas |

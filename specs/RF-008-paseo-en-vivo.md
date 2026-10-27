@@ -6,7 +6,7 @@ modulo: Tracking
 sprint: 5
 prioridad: Alta
 repos: [waggo-api, waggo-mobile]
-actualizado: 2026-09-30
+actualizado: 2026-10-27
 ---
 
 # RF-008 + RF-011 — Paseo en vivo
@@ -18,7 +18,7 @@ Como seguir el auto en Uber: el paseador **inicia** el paseo al recoger a los pe
 > [!note] Decisiones asumidas por el desarrollador
 > - **Transporte**: en este slice la app del dueño consulta la ruta por HTTP cada 5 s, igual que "buscando paseador". SignalR (RNF-007) llega en un slice propio, sin cambiar el modelo ni la API de ingesta.
 > - **Ingesta por lotes** (RNF-007): el paseador envía varias posiciones en un solo request (`POST /track`), ya pensado para cuando no hay señal.
-> - **Mapa**: la ruta se dibuja con SVG (sin proveedor de mapas), igual en iOS, Android y web. El mapa base (Mapbox o Google) queda para cuando se elija proveedor.
+> - **Mapa** (decisión del PO, 2026-10-27): **OpenStreetMap**. La ruta se dibuja sobre un mapa real (Leaflet + tiles de OSM) igual en iOS, Android (Expo Go incluido) y web; reemplaza el dibujo SVG. Ver el borrador de ADR [`_adr-borrador-mapas-openstreetmap.md`](_adr-borrador-mapas-openstreetmap.md).
 
 ## Historias de usuario
 - Como **paseador** quiero **iniciar el paseo al recoger a los perros y terminarlo al devolverlos** para **que el dueño sepa en qué va y el paseo quede registrado**.
@@ -65,7 +65,11 @@ Como seguir el auto en Uber: el paseador **inicia** el paseo al recoger a los pe
 - **Domain**: `Walk.Start`, `Walk.Finish` (`StartedAt`, `FinishedAt`); `Entities/Tracking/TrackPoint` (`WalkId`, `GeoPoint`, `RecordedAt`); `Services/Tracking/RouteMetrics` (distancia y duración); `Errors/Tracking/TrackingErrors`.
 - **Application**: `Walks/Commands/{StartWalk, FinishWalk}`, `Tracking/Commands/RecordTrack`, `Tracking/Queries/GetRoute`; `ITrackPointRepository`.
 - **Infrastructure**: tabla `tracking.track_points` (`location geography(Point, 4326)` con GiST, índice BRIN en `recorded_at` según la nota *Base de datos*), migración `AddTracking`.
-- **Mobile**: paseador — "Iniciar paseo", `useTrackingBeacon` guarda la posición cada 15 s y la envía por lotes (si falla, la conserva y la reenvía con el siguiente lote), "Terminar paseo". Dueño — `WalkRoute`/`RouteView` (SVG con `react-native-svg`: ruta amarilla, inicio gris, posición actual amarilla) con distancia y tiempo; se refresca cada 5 s mientras está en curso y queda como resumen al terminar.
+- **Mobile**: paseador — "Iniciar paseo", `useTrackingBeacon` guarda la posición cada 15 s y la envía por lotes (si falla, la conserva y la reenvía con el siguiente lote), "Terminar paseo". Dueño y paseador — `WalkMap` (tracking) sobre `shared/map/WaggoMap` (OpenStreetMap): recogida mientras se espera; en curso, tramo recorrido sólido, inicio hueco, perro pegado al paseador (dueño) o "Tú" (paseador), zona acordada de 1,5 km (⚠️ RF-009) que se pone roja si la última posición queda fuera, rombos en las alertas con posición, marcador gris y aviso si la última posición tiene más de 60 s (⚠️ provisional); al terminar, la ruta completa encuadrada. Debajo, distancia y tiempo. Se refresca cada 5 s mientras está en curso. Resumen hablado del mapa para lectores de pantalla y "Ver como lista".
+- **Paseador antes de iniciar** (`Accepted`): "Ver mi distancia a la recogida" pide la ubicación y dibuja un tramo punteado en línea recta hasta la recogida ("estás a 450 m en línea recta"); no hay ruta por calles ni ETA (`nueva — requiere spec`). "Abrir en Maps" sigue abriendo Google Maps por enlace, sin costo.
+- **Sin ubicación en segundo plano**: el envío solo ocurre con la app abierta (no hay tarea en segundo plano ni permiso "Siempre"); el paseador ve "Mantén Waggo abierta durante el paseo…".
+
+> Las capturas de abajo son del dibujo SVG anterior; el mapa de OSM las reemplaza (actualizarlas con capturas reales del dispositivo).
 
 | Dueño: paseo en curso | Paseador: compartiendo ubicación |
 |---|---|
@@ -73,10 +77,11 @@ Como seguir el auto en Uber: el paseador **inicia** el paseo al recoger a los pe
 
 ## Plan TDD
 **Backend**: `TrackingEndpointTests` → `WalkTests` (Start/Finish), `TrackPointTests`, `RouteMetricsTests` → handlers.
-**Mobile**: `trackingApi.test.ts`, `routeGeometry.test.ts` (proyección de puntos al SVG), `RouteView.test.tsx`, `AssignedWalkScreen.test.tsx` (iniciar, enviar, terminar), `WalkStatusScreen.test.tsx` (ruta y métricas).
+**Mobile**: `trackingApi.test.ts`, `walkMapScene.test.ts` (marcadores, ruta, zona y resumen por estado), `WalkMap.test.tsx`, `shared/map/*.test.ts(x)` (HTML del mapa, protocolo, geocerca), `AssignedWalkScreen.test.tsx` (iniciar, enviar, terminar, distancia a la recogida), `WalkStatusScreen.test.tsx` (mapa, ruta y métricas).
 
 ## Preguntas abiertas para el PO
-- [ ] ¿Proveedor de mapas (Mapbox, Google)?
+- [x] ¿Proveedor de mapas? → **OpenStreetMap** (PO, 2026-10-27). Tiles públicos solo para desarrollo/piloto: antes de lanzar, proveedor de tiles o autoalojarlos (ver borrador de ADR).
+- [ ] ¿Rastreo en segundo plano (permiso "Siempre", requiere development build) para que el envío siga con el teléfono bloqueado?
 - [ ] ¿Cada cuánto enviar la posición? (batería vs. precisión)
 - [ ] ¿El dueño ve la ruta del paseo después de terminado? ¿Por cuánto tiempo se guarda (privacidad)?
 
@@ -84,4 +89,4 @@ Como seguir el auto en Uber: el paseador **inicia** el paseo al recoger a los pe
 | Repo | Archivos | Pruebas |
 |---|---|---|
 | waggo-api | `Walk.{Start,Finish}`, `Entities/Tracking/TrackPoint`, `Services/Tracking/RouteMetrics`, `Errors/Tracking/TrackingErrors`; `Walks/Commands/{StartWalk,FinishWalk}`, `Tracking/Commands/RecordTrack`, `Tracking/Queries/GetRoute`, `ITrackPointRepository`; `TrackPointConfiguration` (GiST + BRIN), `TrackPointRepository`, migración `AddTracking`; `Endpoints/Tracking/*`, start/finish en `WalksEndpoints` | `TrackingEndpointTests` (ejemplos 1–11), `WalkTests` (Start/Finish/Cancel en curso), `RouteMetricsTests`, `StartAndFinishWalkHandlerTests`, `TrackingHandlersTests` |
-| waggo-mobile | `src/features/tracking/**`, `src/features/walker/{api,hooks}/*` (start/finish), `AssignedWalkScreen`, `WalkStatusScreen`, `Walk` con `startedAt`/`finishedAt`, dependencia `react-native-svg` | `routeGeometry.test.ts`, `trackingApi.test.ts`, `RouteView.test.tsx`, `AssignedWalkScreen.test.tsx`, `WalkStatusScreen.test.tsx` |
+| waggo-mobile | `src/features/tracking/**` (`WalkMap`, `model/walkMapScene`), `src/shared/map/**` (`WaggoMap`, `buildMapHtml`, `protocol`, `geo`), `src/features/walker/{api,hooks}/*` (start/finish), `AssignedWalkScreen`, `WalkStatusScreen`, `Walk` con `startedAt`/`finishedAt`, dependencia `react-native-webview` | `trackingApi.test.ts`, `walkMapScene.test.ts`, `WalkMap.test.tsx`, `WaggoMap.test.tsx`, `buildMapHtml.test.ts`, `protocol.test.ts`, `geo.test.ts`, `AssignedWalkScreen.test.tsx`, `WalkStatusScreen.test.tsx` |
