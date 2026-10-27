@@ -1,12 +1,12 @@
 ---
 rf: RF-001, RF-005
 titulo: Recuperación y seguridad de la cuenta (olvidé mi contraseña, cambiar contraseña y correo, cerrar sesión)
-estado: Borrador
+estado: Lista
 modulo: Identity
 sprint: 1
 prioridad: Alta
 repos: [waggo-api, waggo-mobile]
-actualizado: 2026-10-26
+actualizado: 2026-10-27
 ---
 
 # RF-001 + RF-005 — Recuperación y seguridad de la cuenta
@@ -103,12 +103,12 @@ Como **persona con una cuenta de Waggo** quiero **recuperar mi contraseña si la
 | Regla | Valor | Origen |
 |---|---|---|
 | Código de recuperación y de cambio de correo | 6 dígitos, mismo generador que la confirmación | PO (ver `envio-de-correos-reales`) |
-| Vigencia del código de recuperación y de cambio de correo | 15 minutos | ⚠️ provisional |
-| Intentos fallidos por código | 5 | ⚠️ provisional (igual que la confirmación) |
-| Espera mínima entre envíos | 60 segundos | ⚠️ provisional |
+| Vigencia del código de recuperación y de cambio de correo | 15 minutos | PO |
+| Intentos fallidos por código | 5 | PO (igual que la confirmación) |
+| Espera mínima entre envíos | 60 segundos | PO |
 | Fortaleza de la contraseña | La que ya exige el registro (mínimo 8 caracteres); se reutiliza la misma regla | Existente |
-| Qué se revoca al restablecer o cambiar el correo | Todos los refresh tokens; al cambiar la contraseña con sesión, todos menos el de la sesión actual | ⚠️ provisional |
-| Avisos de seguridad | Correo al cambiar contraseña y al cambiar el correo (al anterior); texto plano | ⚠️ provisional |
+| Qué se revoca al restablecer o cambiar el correo | Todos los refresh tokens; al cambiar la contraseña con sesión, todos menos el de la sesión actual | PO |
+| Avisos de seguridad | Correo al cambiar contraseña y al cambiar el correo (al anterior); texto plano | PO |
 | Anti enumeración | `forgot-password` responde siempre 200 igual; `reset-password` no distingue "sin cuenta" de "código incorrecto" | Decisión de diseño |
 | Qué prueba el código | Quien recibe el código controla ese buzón; restablecer la contraseña no cambia el estado de confirmación del correo | Decisión de diseño |
 | Límite de intentos | El mismo que la confirmación; el límite por IP de `/auth/*` queda para su propio slice | Decisión de diseño |
@@ -173,11 +173,11 @@ Por slice, backend primero (ver `backend-checklist.md`): 🔴 aceptación en `Wa
 | RNF-002 (sesión) | Refresh token revocado en el servidor | 9, 18, 19 |
 
 ## Preguntas abiertas para el PO
-- [ ] ¿Se confirma 15 minutos de vigencia para recuperación y cambio de correo (la confirmación de registro usa 30)?
-- [ ] ¿Cambiar la contraseña con la sesión abierta cierra las demás sesiones (propuesto) o las deja?
-- [ ] ¿Se mandan los avisos de seguridad al cambiar contraseña y correo (propuesto) o solo el código?
-- [ ] ¿Entra "Cambiar correo" ahora (slice D) o se deja para después?
-- [ ] ¿Se atiende en esta misma spec el registro que revela si un correo ya existe, o va en otra?
+- [x] 15 minutos de vigencia para recuperación y cambio de correo: confirmado por el PO (2026-10-27).
+- [x] Cambiar la contraseña con sesión abierta cierra las demás sesiones: confirmado.
+- [x] Se mandan avisos de seguridad al cambiar contraseña y correo: confirmado.
+- [x] "Cambiar correo" entra en esta spec (slice D): confirmado.
+- [x] El registro que revela si un correo existe queda fuera de esta spec (va aparte).
 
 ## Trazabilidad
 Se completa al implementar cada slice.
