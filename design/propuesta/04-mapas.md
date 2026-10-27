@@ -43,7 +43,7 @@ Todos con borde blanco (claro) o `background` (oscuro) de 2 px y sombra `shadow.
 | Destino distinto (si el PO lo permite) | Gota con bandera | `secondary` | ⚠️ pregunta RF-007 ("¿la recogida es siempre la dirección del dueño?") |
 | Perro(s) | Avatar circular de 32 con inicial o foto | `surface` + borde `primary` | Va pegado al paseador durante el paseo (un solo marcador con el perro, no dos) |
 | Paseador en vivo | Avatar de 40 + **cono de rumbo** + halo pulsante | `primary`; cono `primary` al 35 % | En curso; pulso solo si la posición tiene < 30 s |
-| Paseador con señal vieja | Avatar en gris + etiqueta "hace 2 min" | `muted` | Última posición > 60 s ⚠️ provisional |
+| Paseador con señal vieja | Avatar en gris + etiqueta "hace 2 min" | `muted` | Última posición > 30 s (decisión del PO, 2026-10-27) |
 | Paseador cercano (vista del dueño) | Punto con persona | `secondary` | `nueva — requiere spec` (hoy el dueño no ve paseadores cercanos) |
 | Grupo de paseadores o solicitudes | Círculo con número | `secondary` / `primary` | Cuando hay más de 1 en 48 px de pantalla |
 | Solicitud (vista del paseador) | Píldora con lo que gana ("$18.400") | `surface` + texto `text`; seleccionada `primary` | Inicio del paseador |

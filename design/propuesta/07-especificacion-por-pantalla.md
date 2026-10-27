@@ -142,7 +142,7 @@ Reglas comunes a todas: título con rol `header`; acción principal en `ActionFo
 
 ### 35 · Verificación de paseadores
 - Antetítulo "Administración", selector Paseadores / Operación, tarjetas con nombre, hace cuánto se envió, documento enmascarado con botón "ver" (el admin debe poder verificar; registrar cada vez que se muestra es `nueva — requiere spec`), celular, experiencia, "Rechazar" y "Aprobar".
-- **Estados**: pendientes, rechazar (hoja con motivo, "Confirmar rechazo" deshabilitado hasta 5 caracteres ⚠️), aprobado (toast), V ("No hay paseadores por verificar."), E ("No pudimos cargar los paseadores pendientes."). Copys de la spec del panel.
+- **Estados**: pendientes, rechazar (hoja con motivo opcional), aprobado (toast), V ("No hay paseadores por verificar."), E ("No pudimos cargar los paseadores pendientes."). Copys de la spec del panel.
 
 ### 36 · Operación (slices 2–3)
 - Teléfono: mapa de la ciudad con paseadores activos y grupos, alertas como rombos; sheet con "Emergencias activas" (tarjeta roja con "Ver paseo") y "Alertas automáticas"; pestaña "En curso" con la lista de paseos y su última señal.

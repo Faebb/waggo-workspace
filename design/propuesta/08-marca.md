@@ -39,7 +39,7 @@ Con el boceto, 72 y 48 px se leen bien; a 32 px se empasta; a 24 px es una manch
 
 ## Qué falta
 1. **Vectorizar**: redibujar la cabeza con trazo uniforme (y el rotulado) en Figma o Illustrator, o pedir el original a quien lo dibujó. Entregables: `logo-completo.svg`, `logo-cabeza.svg`, `logo-simplificado.svg` (2 colores, ≥ 16 px legible) y las exportaciones del ícono (1024×1024, adaptativo Android con zona segura del 66 %).
-2. **Ícono y splash en Expo**: cuando existan los vectores, sustituir `assets/icon.png`, `adaptive-icon` y `splash-icon.png` en `waggo-mobile` (hoy son los de plantilla). Eso es código; se hace con una spec.
+2. **Ícono y splash en Expo**: el PO pidió (2026-10-27) poner el perrito en el ícono. Ya están `assets/icon.png`, `android-icon-foreground/monochrome.png`, `splash-icon.png` y `favicon.png` de `waggo-mobile`, hechos a partir del boceto (cuadrado zafiro `#3059A4`, medalla crema y cabeza con los bordes difuminados porque el boceto es un recorte rectangular). **Provisional**: al tener el vector, regenerarlos.
 3. **Decisión del PO**: ¿"Waggo" aparece una o dos veces en el logo completo? La propuesta usa una; el boceto traía dos.
 4. **Registro de marca** y usos legales: fuera del alcance de este diseño.
 
