@@ -1,5 +1,3 @@
-<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-api/README.md @ 87e9a65. No editar aquí. -->
-
 # waggo-api
 
 Backend de **Waggo — Plataforma Inteligente para Paseo Seguro de Perros**.
@@ -27,7 +25,8 @@ docker compose up -d db
 dotnet run --project Waggo.Api      # http://localhost:5080
 ```
 - OpenAPI (solo Development): `/openapi/v1.json`.
-- En Development no se necesita token: un usuario de desarrollo con los roles `owner`, `walker` y `admin` firma cada request. Para probar otro rol envía el header `X-Dev-Roles: walker`; para actuar como otro usuario, `X-Dev-User-Id: otro-dueno`.
+- En Development no se necesita token: un usuario de desarrollo con los roles `owner`, `walker` y `admin` firma cada request (mientras `Authentication:UseDevelopmentUser` sea `true`, ese bypass gana sobre cualquier `Authorization: Bearer`). Para probar otro rol envía el header `X-Dev-Roles: walker`; para actuar como otro usuario, `X-Dev-User-Id: otro-dueno`.
+- **Admin real para probar el login de verdad**: con `Seed:Admin` configurado (ya viene en `appsettings.Development.json`: `admin@waggo.local` / `Admin1234`), la API crea al arrancar una cuenta ya confirmada con `IsAdmin = true`. Como las políticas `Owner` y `Walker` también aceptan el rol `admin`, esa cuenta puede llamar cualquier endpoint. `POST /auth/login` entrega la sesión directamente (ADR-017: sin segundo factor) — sirve para ejercitar el flujo real de autenticación en vez del bypass, útil antes de desplegar a un ambiente en la nube. Para que el `Authorization: Bearer` del admin sea realmente quien autoriza (y no el usuario de desarrollo), pon `Authentication:UseDevelopmentUser` en `false` esa sesión.
 - En Development y en las pruebas, la API aplica las migraciones pendientes al arrancar. En otros ambientes se aplican como un paso del despliegue.
 - Health checks: `/health/live` (el proceso responde) y `/health/ready` (PostgreSQL disponible).
 
