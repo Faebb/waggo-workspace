@@ -1,7 +1,7 @@
 ---
 rf: RF-001, RF-005
 titulo: Correos reales (Amazon SES) y confirmación con código de 6 dígitos
-estado: En progreso
+estado: Implementada
 modulo: Identity
 sprint: 1
 prioridad: Alta
@@ -165,7 +165,7 @@ Slice 2 — código y reenvío (API, luego mobile):
 - [ ] Recuperación de contraseña por correo reutilizará `IEmailSender` y un código igual; queda para su propia spec.
 
 ## Trazabilidad
-Implementado en PRs abiertos, aún sin mergear: waggo-api#22 (envío con SES), waggo-api#23 (código de 6 dígitos y reenvío, apilado sobre #22) y waggo-mobile#22. Falta la prueba manual con SES real en sandbox (fila 1) y el correo desde un dominio propio.
+Implementado y mergeado en `main` (2026-10-27): waggo-api#22 (envío con SES), waggo-api#23 (código de 6 dígitos y reenvío) y waggo-mobile#22. Se probó con SES real en *sandbox* (2026-10-26): llegó el correo con el código y `POST /auth/confirm` lo aceptó. Sigue pendiente, como tarea operativa de AWS y no de código, el correo desde un dominio propio y la salida del *sandbox* (ver [[Guía AWS SES - prompt de configuración]] en el vault).
 
 | Repo | Archivos | Pruebas |
 |---|---|---|
