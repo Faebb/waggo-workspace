@@ -1,7 +1,7 @@
 ---
 rf: RF-001, RF-005
 titulo: Correos reales (Amazon SES) y confirmación con código de 6 dígitos
-estado: Lista
+estado: En progreso
 modulo: Identity
 sprint: 1
 prioridad: Alta
@@ -165,9 +165,10 @@ Slice 2 — código y reenvío (API, luego mobile):
 - [ ] Recuperación de contraseña por correo reutilizará `IEmailSender` y un código igual; queda para su propia spec.
 
 ## Trazabilidad
-Se completa al implementar.
+Implementado en PRs abiertos, aún sin mergear: waggo-api#22 (envío con SES), waggo-api#23 (código de 6 dígitos y reenvío, apilado sobre #22) y waggo-mobile#22. Falta la prueba manual con SES real en sandbox (fila 1) y el correo desde un dominio propio.
 
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api | | |
-| waggo-mobile | | |
+| waggo-api (#22) | `Waggo.Infrastructure/Options/Identity/{EmailOptions, EmailProvider, SesOptions, EmailOptionsValidator}.cs`, `Services/Identity/SesEmailSender.cs`, `DependencyInjection.cs`, `Waggo.Api/Infrastructure/Extensions/EmailStartupGuard.cs`, `Waggo.Domain/Errors/Identity/EmailErrors.cs`, `RegisterHandler` (envía antes de guardar) | `SesEmailSenderTests`, `EmailOptionsValidatorTests`, `EmailStartupGuardTests`, `RegisterHandlerTests`, `IdentityEndpointTests` (filas 1–7, salvo la prueba manual con SES real) |
+| waggo-api (#23) | `User` (`ConfirmationAttempts`, `Confirm`, `TryIssueConfirmationCode`), `IdentityErrors.ConfirmationAttemptsExceeded`, `ITokenGenerator.GenerateNumericCode`, `ConfirmEmail*` y `ResendConfirmation/*`, `ConfirmationEmail`, `ConfirmRequest`, `ResendConfirmationRequest` + validadores, `IdentityEndpoints`, migración `AddConfirmationAttempts` | `UserTests`, `ConfirmEmailHandlerTests`, `ResendConfirmationHandlerTests`, `RegisterHandlerTests`, `SecureTokenGeneratorTests`, `ConfirmRequestValidatorTests`, `ResendConfirmationRequestValidatorTests`, `IdentityEndpointTests` (filas 8–20) |
+| waggo-mobile (#22) | `src/features/auth/{api/authApi.ts, hooks/useAuth.ts, screens/ConfirmScreen.tsx}` | `authApi.test.ts`, `ConfirmScreen.test.tsx` |

@@ -34,10 +34,10 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-006 Matching por cercanía](RF-006-matching-por-cercania.md) | RF-006 | `Walks` | 4 | Implementada |
 | [RF-002 + RF-003 Paseadores verificados](RF-002-RF-003-paseadores-verificados.md) | RF-002, RF-003 (verificación manual) | `Identity` | 2 | Implementada |
 | [RF-001 + RF-005 Identidad y login](RF-001-RF-005-identidad-y-login.md) | RF-001, RF-005, RNF-001, RNF-002 | `Identity` | 1 | Implementada |
-| [RF-001 + RF-005 Login social (Google, Microsoft)](RF-001-RF-005-login-social-google-microsoft.md) | RF-001, RF-005 | `Identity` | 1 | Lista |
+| [RF-001 + RF-005 Login social (Google, Microsoft)](RF-001-RF-005-login-social-google-microsoft.md) | RF-001, RF-005 | `Identity` | 1 | En progreso |
 | [RF-015 – RF-018 Pagos con escrow](RF-015-RF-018-pagos-con-escrow.md) | RF-015 – RF-018 (pasarela simulada) | `Payments` | 7 (adelantado) | Implementada |
 | [RF-014 Notificaciones del recorrido](RF-014-notificaciones-del-recorrido.md) | RF-014 (en la app, sin push) | `Messaging` | 6 | Implementada |
 | [RF-001 + RF-005 Perfil de usuario](RF-001-RF-005-perfil-de-usuario.md) | RF-001, RF-005 | `Identity` | por asignar | Borrador |
 | [RF-002 + RF-003 Panel de administración](RF-002-RF-003-panel-de-administracion.md) | RF-002, RF-003, RF-012 | `Walkers` | por asignar | En progreso |
 | [DEV-001 Usuarios de prueba predeterminados](DEV-001-usuarios-de-prueba.md) | — (soporte de desarrollo y pruebas) | `Identity` | transversal | Implementada |
-| [RF-001 + RF-005 Correos reales (SES) y código de 6 dígitos](RF-001-RF-005-envio-de-correos-reales.md) | RF-001, RF-005 | `Identity` | 1 | Lista |
+| [RF-001 + RF-005 Correos reales (SES) y código de 6 dígitos](RF-001-RF-005-envio-de-correos-reales.md) | RF-001, RF-005 | `Identity` | 1 | En progreso |
