@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Baloo;font-weight:700;src:url('../../../../waggo-mobile/node_modules/@expo-google-fonts/baloo-2/700Bold/Baloo2_700Bold.ttf')}
+body{margin:0;font-family:Baloo}
+</style></head><body>
+<pre id="out"></pre>
+<script>
+// Genera los activos de marca a partir de marca/logo-boceto.png.
+// Uso: chrome --headless=new --allow-file-access-from-files --dump-dom generar-marca.html  (ver generador/brand-assets.js)
+const INK = '#16212E', SAPPHIRE = '#3059A4';
+const img = new Image();
+img.onload = async () => {
+  await document.fonts.load('700 100px Baloo');
+  const W = img.width, H = img.height, f = W / 1920;
+  const sc = document.createElement('canvas'); sc.width = W; sc.height = H;
+  const x0 = sc.getContext('2d'); x0.drawImage(img, 0, 0);
+  const data = x0.getImageData(0, 0, W, H).data;
+  const boxes = [[90, 310, 610, 670], [1280, 1290, 1820, 1530]].map(b => b.map(v => Math.round(v * f)));
+  // máscara del rotulado "WAGG" original (negro puro dentro de las dos cajas), dilatada para borrar el halo
+  const mask = new Uint8Array(W * H);
+  boxes.forEach(b => { for (let y = b[1]; y <= b[3]; y++) for (let x = b[0]; x <= b[2]; x++) { const i = (y * W + x) * 4; if ((data[i] + data[i + 1] + data[i + 2]) / 3 < 60) mask[y * W + x] = 1; } });
+  const R = Math.round(9 * f), tmp = new Uint8Array(W * H), dil = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let v = 0; for (let k = -R; k <= R && !v; k++) { const xx = x + k; if (xx >= 0 && xx < W && mask[y * W + xx]) v = 1; } tmp[y * W + x] = v; }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let v = 0; for (let k = -R; k <= R && !v; k++) { const yy = y + k; if (yy >= 0 && yy < H && tmp[yy * W + x]) v = 1; } dil[y * W + x] = v; }
+  // cabeza sin rotulado: tinta sobre transparente (alfa = oscuridad del boceto)
+  const hc = document.createElement('canvas'); hc.width = W; hc.height = H;
+  const hx = hc.getContext('2d'); const out = hx.createImageData(W, H);
+  const ik = [22, 33, 46];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4; const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
+    const a = dil[y * W + x] ? 0 : Math.min(1, (255 - lum) / 255 * 1.5);
+    out.data[i] = ik[0]; out.data[i + 1] = ik[1]; out.data[i + 2] = ik[2]; out.data[i + 3] = a * 255;
+  }
+  hx.putImageData(out, 0, 0);
+  const res = {};
+  // 1) cabeza sola (recorte del rostro y orejas), 236x300
+  const head = document.createElement('canvas'); head.width = 236; head.height = 300;
+  const hcx = head.getContext('2d'); hcx.imageSmoothingQuality = 'high';
+  hcx.drawImage(hc, 400 * f, 80 * f, 1160 * f, 1480 * f, 0, 0, 236, 300);
+  res.head = head.toDataURL('image/png'); res.headW = 236; res.headH = 300;
+  // 2) composición completa: cabeza + "Waggo" en Baloo 2 (zafiro), girado como el rotulado original
+  const S = 460;
+  const hero = document.createElement('canvas'); hero.width = S; hero.height = S;
+  const cx = hero.getContext('2d'); cx.imageSmoothingQuality = 'high';
+  cx.drawImage(hc, 0, 0, S, S);
+  cx.save(); cx.translate(S * 0.745, S * 0.79); cx.rotate(17 * Math.PI / 180);
+  cx.font = '700 ' + Math.round(S * 0.15) + 'px Baloo'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  cx.lineJoin = 'round'; cx.lineWidth = S * 0.012; cx.strokeStyle = SAPPHIRE; cx.fillStyle = SAPPHIRE;
+  cx.strokeText('Waggo', 0, 0); cx.fillText('Waggo', 0, 0); cx.restore();
+  res.hero = hero.toDataURL('image/png'); res.heroW = S; res.heroH = S;
+  document.getElementById('out').textContent = 'BRAND_JSON_START' + JSON.stringify(res) + 'BRAND_JSON_END';
+};
+img.src = 'logo-boceto.png';
+</script></body></html>

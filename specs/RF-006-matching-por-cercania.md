@@ -48,3 +48,6 @@ ORDER BY ST_Distance(w.pickup_location, here.point)
 | Repo | Archivos | Pruebas |
 |---|---|---|
 | waggo-api | `Services/Walks/WalkMatching`, `IWalkRepository.ListRequestedNearAsync`, `ListAvailableWalksHandler`, `WalkRepository` | `WalkerEndpointTests.Available_WithLocation_LeavesOutRequestsFartherThan5Km_RF006` (ejemplos 1–3), `ListAvailableWalksHandlerTests` |
+
+> [!note] Cambio posterior (mapas con OpenStreetMap, 2026-10-27)
+> En el móvil, las solicitudes que devuelve este endpoint también se ven en el mapa del inicio del paseador (píldoras de precio en el centro de la cuadra, ver RF-007 paseador). Sin cambios de API ni de la regla de 5 km.

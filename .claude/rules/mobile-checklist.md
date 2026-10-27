@@ -17,6 +17,8 @@ Used by `mobile-test-writer`, `mobile-implementer` and `architecture-reviewer`. 
 - [ ] Prettier: width 120, single quotes, trailing commas.
 - [ ] Visual design (ADR-018, replaces ADR-013): "Seashell & Sapphire" palette, light theme by default (dark available via the toggle, ADR-015), sapphire blue as accent (tone differs per theme for AA contrast; red only for errors and emergencies), Baloo 2 for headings/buttons + Inter for body text, rounded/pill shapes, line icons allowed. Only tokens from `src/shared/ui/theme.ts`; no loose colors or font sizes.
 
+- [ ] Maps (PO decision: OpenStreetMap): only `shared/map/WaggoMap` (Leaflet in WebView/iframe, messages typed in `protocol.ts`); no native map SDKs; "© OpenStreetMap contributors" always visible; tiles from `EXPO_PUBLIC_MAP_TILE_URL` (public OSM tiles only for development/pilot); address search only through `features/places` (Nominatim: ≤ 1 req/s, search on submit, never while typing, cached).
+
 ## 3. API
 - [ ] Calls through `shared/api/httpClient.get(path, zodSchema, params)`; it unwraps `WaggoApiResponse` and returns `{ data, pagination, warnings, infos, traceId }`.
 - [ ] `success: false` → `ApiError` (`status`, `code`, `errors`, `traceId`); screens show a friendly Spanish message.

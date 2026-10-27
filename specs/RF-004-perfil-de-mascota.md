@@ -6,7 +6,7 @@ modulo: Pets
 sprint: 3
 prioridad: Media
 repos: [waggo-api, waggo-mobile]
-actualizado: 2026-09-30
+actualizado: 2026-10-27
 ---
 
 # RF-004 — Perfil de mascota
@@ -97,7 +97,7 @@ Respuesta de un perro (`PetResponse`):
 - **Infrastructure**: `Persistence/Configurations/Pets/PetConfiguration` (schema `pets`, tabla `pets`, `snake_case` con `EFCore.NamingConventions`), `Persistence/Migrations/`, `Services/Pets/PetRepository`, `Services/Security/AesGcmFieldEncryptor` + `EncryptedStringConverter`, `Options/Security/EncryptionOptions` (`Encryption:Key`, base64 de 32 bytes, validada al arrancar).
 - **Api**: `Endpoints/Pets/{PetsEndpoints, Requests/RegisterPetRequest, Validators/RegisterPetRequestValidator}`, `Infrastructure/Authentication/HttpCurrentUser`. Las migraciones se aplican al arrancar en `Development` y `Testing`.
 - **Mobile**: `features/pets/{api/petsApi, hooks/usePets (useMyPets, useRegisterPet), components/PetRow, screens/{MyPetsScreen, AddPetScreen}, model/{types, describePet, petForm}}`; `shared/api/httpClient.post`, `shared/ui/{TextField, ActionFooter}` y `layout.column` en el tema. Rutas `/mascotas` y `/mascotas/nueva`; la bienvenida suma el botón secundario "Mis perros".
-- El formulario de mobile no pide la fecha de nacimiento todavía (la API sí la acepta): hace falta un selector de fecha nativo, que se agregará con el perfil completo del perro.
+- El formulario de mobile pide la fecha de nacimiento como texto "DD/MM/AAAA" (`shared/ui/DateField`); el selector nativo queda pendiente de aprobar la dependencia (ver cambio posterior 2026-10-27).
 - El formulario solo valida lo que el dueño puede corregir antes de enviar (nombre vacío, peso que no es número). Las reglas de negocio las valida la API y sus mensajes se muestran tal como llegan.
 
 | Mis perros | Agregar perro |
@@ -129,6 +129,18 @@ Respuesta de un perro (`PetResponse`):
 - [ ] Tamaños y rangos de peso definitivos. ¿El tamaño afecta la tarifa?
 - [ ] ¿Máximo de perros por dueño?
 - [ ] ¿El paseador ve las notas médicas completas del perro que va a pasear? (se resolverá con RF-007)
+
+> [!note] Cambio posterior (propuesta de diseño, 2026-10-27)
+> - **Detalle del perro** (`/mascotas/[id]`, `PetDetailScreen`) sobre el `GET /pets/{id}` existente: datos, notas médicas con candado ("Se guardan cifradas. Hoy solo tú las ves.") y "Pedir paseo con Luna", que abre pedir paseo con el perro preseleccionado.
+> - **Mis perros**: tarjetas con indicador "Notas médicas privadas"; vacío "Aún no tienes perros" + "Agregar mi primer perro"; error con "Intentar de nuevo".
+> - **Agregar perro**: `Pets.InvalidName` y `Pets.InvalidWeight` se muestran bajo su campo; `Pets.LimitReached` en aviso ámbar y el botón queda deshabilitado.
+> - **Pendiente**: fecha de nacimiento con selector nativo (necesita una dependencia de selector de fecha), rangos de peso en los chips y el contador "2 de 10" (valores ⚠️ provisionales).
+
+> [!note] Cambio posterior (cierre de diferencias con la propuesta, 2026-10-27)
+> - **Fecha de nacimiento**: campo "Nacimiento" (opcional) con `shared/ui/DateField`, un campo de texto que escribe "DD/MM/AAAA" sobre teclado numérico. **No es el selector nativo** del diseño: ese necesita `@react-native-community/datetimepicker` (dependencia nueva, decisión del PO). El front rechaza fechas que no existen ("Escribe una fecha real, por ejemplo 10/05/2021.") o futuras ("La fecha de nacimiento no puede ser futura."); el límite de 30 años lo valida la API (`Pets.InvalidBirthDate`, que ahora se muestra bajo el campo). Se envía como `birthDate: "2021-05-10"`. El detalle muestra "10/05/2021".
+> - **Chips de tamaño** con rango: "Pequeño · <10 kg", "Mediano · 10–25 kg", "Grande · >25 kg" (⚠️ provisional, `PET_SIZE_CHIP_LABELS`).
+> - **Contador** "2 de 10 perros" bajo el título de Mis perros (`MAX_PETS_PER_OWNER = 10`, ⚠️ provisional, igual a `Pet.MaxPetsPerOwner`). Vacío con el copy del diseño: "Agrégalos una vez y elígelos en segundos cada vez que pidas un paseo."
+> - Pruebas: `AddPetScreen.test.tsx` (fecha válida, inválida, futura y `Pets.InvalidBirthDate`), `MyPetsScreen.test.tsx` (contador), `PetDetailScreen.test.tsx` (fecha), `DateField.test.tsx`.
 
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
