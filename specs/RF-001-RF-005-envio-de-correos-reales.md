@@ -40,7 +40,7 @@ Como **persona que se registra con correo y contraseña** quiero **recibir en mi
 ### Envío (slice 1)
 | # | Entrada | Resultado esperado | Tipo |
 |---|---|---|---|
-| 1 | `Provider = Ses`, registro con correo válido | SES recibe `SendEmail` con remitente, destinatario, asunto y cuerpo; el registro responde 201 | Feliz |
+| 1 | `Provider = Ses`, registro con correo válido | SES recibe `SendEmail` con remitente, destinatario, asunto y cuerpo; el registro responde 200 | Feliz |
 | 2 | `Provider = Development` (o sin configurar en Development/Testing) | El correo se escribe en el log; no se llama a AWS | Feliz |
 | 3 | `Provider = Ses` sin `FromAddress` o sin `Region` | La API no arranca, con un mensaje que dice qué falta | Error |
 | 4 | Ambiente `Production` con `Provider = Development` | La API no arranca | Error (protección) |
