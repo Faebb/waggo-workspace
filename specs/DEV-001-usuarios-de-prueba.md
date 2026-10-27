@@ -1,7 +1,7 @@
 ---
 rf: DEV-001
 titulo: Usuarios de prueba predeterminados
-estado: En progreso
+estado: Implementada
 modulo: Identity
 sprint: transversal
 prioridad: Alta
@@ -83,4 +83,4 @@ Sin endpoints nuevos. Se usa `POST /api/v1/auth/login` (RF-005).
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
-| waggo-api (rama `feat/dev-seed-users`, PR api#21) | `Waggo.Infrastructure/Options/Identity/{SeedUsersOptions, SeedUserOptions}.cs`, `Waggo.Infrastructure/Services/Identity/DevelopmentUsersSeeder.cs`, `Waggo.Infrastructure/DependencyInjection.cs`, `Waggo.Api/Infrastructure/Extensions/PipelineExtensions.cs` (`SeedDevelopmentUsersIfLocalAsync`), `Waggo.Api/Program.cs`, `Waggo.Api/appsettings.Development.json` | `Tests/Waggo.Infrastructure.UnitTests/Services/Identity/DevelopmentUsersSeederTests.cs` (filas 1, 5–7), `Tests/Waggo.Api.IntegrationTests/Endpoints/Identity/SeededUsersTests.cs` (filas 2–4), `Tests/Waggo.Api.UnitTests/Infrastructure/Settings/ProductionSettingsTests.cs` (fila 8) |
+| waggo-api (PR api#21) | `Waggo.Infrastructure/Options/Identity/{SeedUsersOptions, SeedUserOptions}.cs`, `Waggo.Infrastructure/Services/Identity/DevelopmentUsersSeeder.cs`, `Waggo.Infrastructure/DependencyInjection.cs`, `Waggo.Api/Infrastructure/Extensions/PipelineExtensions.cs` (`SeedDevelopmentUsersIfLocalAsync`), `Waggo.Api/Program.cs`, `Waggo.Api/appsettings.Development.json` | `Tests/Waggo.Infrastructure.UnitTests/Services/Identity/DevelopmentUsersSeederTests.cs` (filas 1, 5–7), `Tests/Waggo.Api.IntegrationTests/Endpoints/Identity/SeededUsersTests.cs` (filas 2–4), `Tests/Waggo.Api.UnitTests/Infrastructure/Settings/ProductionSettingsTests.cs` (fila 8) |

@@ -39,4 +39,4 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-014 Notificaciones del recorrido](RF-014-notificaciones-del-recorrido.md) | RF-014 (en la app, sin push) | `Messaging` | 6 | Implementada |
 | [RF-001 + RF-005 Perfil de usuario](RF-001-RF-005-perfil-de-usuario.md) | RF-001, RF-005 | `Identity` | por asignar | Borrador |
 | [RF-002 + RF-003 Panel de administración](RF-002-RF-003-panel-de-administracion.md) | RF-002, RF-003, RF-012 | `Walkers` | por asignar | En progreso |
-| [DEV-001 Usuarios de prueba predeterminados](DEV-001-usuarios-de-prueba.md) | — (soporte de desarrollo y pruebas) | `Identity` | transversal | En progreso |
+| [DEV-001 Usuarios de prueba predeterminados](DEV-001-usuarios-de-prueba.md) | — (soporte de desarrollo y pruebas) | `Identity` | transversal | Implementada |
