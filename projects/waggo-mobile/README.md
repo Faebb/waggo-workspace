@@ -1,3 +1,5 @@
+<!-- Copia generada por scripts/sync-readmes.ps1 desde waggo-mobile/README.md @ 0e643e2. No editar aquí. -->
+
 # waggo-mobile
 
 App de **Waggo — Plataforma Inteligente para Paseo Seguro de Perros** para iOS, Android y Web.

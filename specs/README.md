@@ -40,5 +40,5 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-001 + RF-005 Perfil de usuario](RF-001-RF-005-perfil-de-usuario.md) | RF-001, RF-005 | `Identity` | por asignar | Borrador |
 | [RF-002 + RF-003 Panel de administración](RF-002-RF-003-panel-de-administracion.md) | RF-002, RF-003, RF-012 | `Walkers` | por asignar | En progreso |
 | [DEV-001 Usuarios de prueba predeterminados](DEV-001-usuarios-de-prueba.md) | — (soporte de desarrollo y pruebas) | `Identity` | transversal | Implementada |
-| [RF-001 + RF-005 Correos reales (SES) y código de 6 dígitos](RF-001-RF-005-envio-de-correos-reales.md) | RF-001, RF-005 | `Identity` | 1 | En progreso |
-| [RF-001 + RF-005 Recuperación y seguridad de la cuenta](RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md) | RF-001, RF-005 | `Identity` | 1 | Lista |
+| [RF-001 + RF-005 Correos reales (SES) y código de 6 dígitos](RF-001-RF-005-envio-de-correos-reales.md) | RF-001, RF-005 | `Identity` | 1 | Implementada |
+| [RF-001 + RF-005 Recuperación y seguridad de la cuenta](RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md) | RF-001, RF-005 | `Identity` | 1 | Implementada |

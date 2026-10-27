@@ -1,7 +1,7 @@
 ---
 rf: RF-001, RF-005
 titulo: Recuperación y seguridad de la cuenta (olvidé mi contraseña, cambiar contraseña y correo, cerrar sesión)
-estado: Lista
+estado: Implementada
 modulo: Identity
 sprint: 1
 prioridad: Alta
@@ -67,7 +67,7 @@ Como **persona con una cuenta de Waggo** quiero **recuperar mi contraseña si la
 | 18 | `logout` con un refresh token activo | 200 `true`; el token queda revocado y `refresh` con él da 401 | Feliz |
 | 19 | `logout` con un refresh token desconocido, vencido o ya revocado | 200 `true` (idempotente) | Límite |
 | 20 | `logout` sin `refreshToken` | ❌ `Request.Required` (400, capa 1) | Error |
-| 21 | `logout` de un token de otra cuenta | 200 `true` pero el token ajeno **no** se revoca | Límite |
+| 21 | `logout` con el refresh token de un dispositivo, habiendo otro dispositivo de la misma cuenta | Solo se revoca ese token; el otro dispositivo sigue funcionando | Límite |
 | 22 | Mobile: cerrar sesión sin red | La sesión local se borra igual | Límite |
 
 ### Slice C — Cambiar contraseña
@@ -107,11 +107,14 @@ Como **persona con una cuenta de Waggo** quiero **recuperar mi contraseña si la
 | Intentos fallidos por código | 5 | PO (igual que la confirmación) |
 | Espera mínima entre envíos | 60 segundos | PO |
 | Fortaleza de la contraseña | La que ya exige el registro (mínimo 8 caracteres); se reutiliza la misma regla | Existente |
-| Qué se revoca al restablecer o cambiar el correo | Todos los refresh tokens; al cambiar la contraseña con sesión, todos menos el de la sesión actual | PO |
+| Qué se revoca | Al restablecer la contraseña, todos los refresh tokens. Al cambiar la contraseña o el correo con sesión, todos menos el de la sesión que lo hace: la petición trae su `refreshToken` (opcional; si falta, es inválido o es de otra cuenta, se cierran todos) | PO |
 | Avisos de seguridad | Correo al cambiar contraseña y al cambiar el correo (al anterior); texto plano | PO |
 | Anti enumeración | `forgot-password` responde siempre 200 igual; `reset-password` no distingue "sin cuenta" de "código incorrecto" | Decisión de diseño |
 | Qué prueba el código | Quien recibe el código controla ese buzón; restablecer la contraseña no cambia el estado de confirmación del correo | Decisión de diseño |
 | Límite de intentos | El mismo que la confirmación; el límite por IP de `/auth/*` queda para su propio slice | Decisión de diseño |
+| Contraseña incorrecta con sesión | En cambiar contraseña y en pedir el cambio de correo, una contraseña incorrecta cuenta para el mismo bloqueo del login (5 intentos, 15 min, `Identity.TooManyAttempts`): un access token robado no debe servir para adivinar la contraseña | Decisión de diseño (implementación) |
+| Bloqueo por intentos de login | Restablecer la contraseña con el código lo levanta: quien controla el buzón recupera la cuenta | Decisión de diseño (implementación) |
+| `logout` | Anónimo: tener el refresh token es la prueba de pertenencia; revoca solo ese token | Decisión de diseño |
 
 ## Contrato de API
 Los de `/auth/*` son `AllowAnonymous`; `logout` también (usa el refresh token). Los de `/users/me/*` exigen sesión (`RequireAuthorization()` por defecto).
@@ -128,7 +131,7 @@ Los de `/auth/*` son `AllowAnonymous`; `logout` también (usa el refresh token).
 
 ### Slice D
 `POST /api/v1/users/me/email` — `{ "newEmail": "ana.nueva@mail.com", "password": "…" }` → `200 { data: true }`.
-`POST /api/v1/users/me/email/confirm` — `{ "code": "004821" }` → `200 { data: true }`.
+`POST /api/v1/users/me/email/confirm` — `{ "code": "004821", "refreshToken": "…" }` → `200 { data: true }`. `refreshToken` es opcional (agregado al implementar): es el de la sesión que confirma, para dejarla abierta mientras se cierran las demás.
 
 Todas responden en `WaggoApiResponse`. Los DTO van en `Waggo.Api/Endpoints/Identity/Requests/` con su validador de capa 1 en `Validators/`.
 
@@ -143,7 +146,7 @@ Todas responden en `WaggoApiResponse`. Los DTO van en `Waggo.Api/Endpoints/Ident
 | `Identity.EmailUnchanged` | 422 | Ese ya es el correo de tu cuenta. |
 | `Identity.EmailChangeCodeInvalid` / `…Expired` / `…AttemptsExceeded` | 404 / 409 / 422 | Los mismos mensajes del código de recuperación. |
 
-Se reutilizan `Identity.WeakPassword`, `Identity.EmailAlreadyRegistered`, `Identity.InvalidCredentials` y `Email.SendFailed` (503, igual que en el registro).
+Se reutilizan `Identity.WeakPassword`, `Identity.EmailAlreadyRegistered`, `Identity.InvalidCredentials`, `Identity.TooManyAttempts` y `Email.SendFailed` (503, igual que en el registro).
 
 ## Diseño
 ### Backend (`waggo-api`)
@@ -180,9 +183,22 @@ Por slice, backend primero (ver `backend-checklist.md`): 🔴 aceptación en `Wa
 - [x] El registro que revela si un correo existe queda fuera de esta spec (va aparte).
 
 ## Trazabilidad
-Se completa al implementar cada slice.
+Los cinco slices están implementados y mergeados en `main` (2026-10-27). Cada slice fue un PR de API y uno de mobile, con TDD (`test` → `feat` → `refactor`).
 
-| Repo | Archivos | Pruebas |
-|---|---|---|
-| waggo-api | | |
-| waggo-mobile | | |
+| Slice | Repo | Archivos | Pruebas |
+|---|---|---|---|
+| A. Olvidé mi contraseña | waggo-api (#24) | `User` (`TryIssuePasswordResetCode`, `ResetPassword`), `IdentityErrors.{ResetCodeInvalid, ResetCodeExpired, ResetAttemptsExceeded}`, `Identity/Commands/{ForgotPassword, ResetPassword}`, `PasswordStrength` (compartida con el registro), `PasswordResetEmail`, `PasswordChangedEmail`, `ForgotPasswordRequest`, `ResetPasswordRequest` + validadores, `IdentityEndpoints` (`/auth/forgot-password`, `/auth/reset-password`), migración `AddPasswordResetCode` | `UserPasswordResetTests`, `ForgotPasswordHandlerTests`, `ResetPasswordHandlerTests`, `ForgotPasswordRequestValidatorTests`, `ResetPasswordRequestValidatorTests`, `PasswordRecoveryEndpointTests` (filas 1–17) |
+| A | waggo-mobile (#23) | `src/features/auth/{screens/ForgotPasswordScreen.tsx, screens/ResetPasswordScreen.tsx, hooks/useResendCountdown.ts}`, `authApi.{forgotPassword, resetPassword}`, enlace en `LoginScreen`, rutas `olvide-contrasena` y `restablecer-contrasena` | `ForgotPasswordScreen.test.tsx`, `ResetPasswordScreen.test.tsx`, `authApi.test.ts`, `LoginScreen.test.tsx` (filas 1–17, 39) |
+| B. Cerrar sesión | waggo-api (#25) | `Identity/Commands/Logout`, `LogoutRequest` + validador, `IdentityEndpoints` (`/auth/logout`) | `LogoutHandlerTests`, `LogoutRequestValidatorTests`, `LogoutEndpointTests` (filas 18–21) |
+| B | waggo-mobile (#24) | `authApi.logout` (borra la sesión local primero y revoca en la API sin bloquear), `SettingsScreen` | `authApi.test.ts` (fila 22) |
+| C. Cambiar contraseña | waggo-api (#26) | `User.ChangePassword`, `IdentityErrors.{CurrentPasswordIncorrect, PasswordUnchanged}`, `Identity/Commands/ChangePassword`, `IRefreshTokenRepository.RevokeAllForUserExceptAsync`, `ChangePasswordRequest` + validador, `UsersEndpoints` (`PUT /users/me/password`) | `UserChangePasswordTests`, `ChangePasswordHandlerTests`, `ChangePasswordRequestValidatorTests`, `ChangePasswordEndpointTests` (filas 23–28) |
+| C | waggo-mobile (#25) | `src/features/profile/{screens/ChangePasswordScreen.tsx, api/profileApi.ts (changeMyPassword), hooks/useProfile.ts}`, entrada en `SettingsScreen`, ruta `configuracion/contrasena` | `ChangePasswordScreen.test.tsx`, `profileApi.test.ts`, `SettingsScreen.test.tsx` |
+| D. Cambiar correo | waggo-api (#27) | `User` (`RequestEmailChange`, `ConfirmEmailChange`), `IdentityErrors.{EmailUnchanged, EmailChangeCodeInvalid, EmailChangeCodeExpired, EmailChangeAttemptsExceeded}`, `Identity/Commands/{RequestEmailChange, ConfirmEmailChange}`, `EmailChangeEmail`, `SessionCloser`, `SecurityNotice`, requests + validadores, `UsersEndpoints` (`/users/me/email`, `/users/me/email/confirm`), migración `AddEmailChange` | `UserEmailChangeTests`, `RequestEmailChangeHandlerTests`, `ConfirmEmailChangeHandlerTests`, `EmailChangeRequestValidatorTests`, `EmailChangeEndpointTests` (filas 29–37) |
+| D | waggo-mobile (#26) | `src/features/profile/{screens/ChangeEmailScreen.tsx, api/profileApi.ts (requestMyEmailChange, confirmMyEmailChange), hooks/useProfile.ts}`, entrada en `SettingsScreen`, ruta `configuracion/correo` | `ChangeEmailScreen.test.tsx`, `profileApi.test.ts`, `SettingsScreen.test.tsx` |
+| E. Cuenta sin confirmar | waggo-mobile (#27) | `LoginScreen` (`onAccountNotConfirmed`: pide un código nuevo y abre la pantalla del código), `src/app/login.tsx` | `LoginScreen.test.tsx` (fila 38) |
+
+> [!info] Comprobado a mano
+> Los endpoints de los slices A y D se recorrieron contra la API local con JWT real y el proveedor `Development` (códigos en el log). La app no se probó a mano en el navegador ni con SES real para estos slices.
+
+> [!warning] Fuera de esta spec
+> Quedan fuera, por decisión del PO: el registro que revela si un correo ya existe, eliminar cuenta, proveedores vinculados y el límite de intentos por IP en `/auth/*`.
