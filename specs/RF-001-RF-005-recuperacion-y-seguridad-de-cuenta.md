@@ -49,7 +49,7 @@ Como **persona con una cuenta de Waggo** quiero **recuperar mi contraseña si la
 | 4 | `forgot-password` antes de 60 s del último envío | 200 `true`; no se manda nada | Límite |
 | 5 | `forgot-password` con correo mal formado o vacío | ❌ `Request.InvalidValue` / `Request.Required` (400, capa 1) | Error |
 | 6 | `reset-password` con el código correcto y una contraseña válida | 200 `true`; contraseña cambiada, código borrado, todos los refresh tokens revocados, aviso por correo | Feliz |
-| 7 | Tras el 6, login con la contraseña anterior | ❌ `Identity.InvalidCredentials` (401) | Error |
+| 7 | Tras el 6, login con la contraseña anterior | ❌ `Identity.InvalidCredentials` (400) | Error |
 | 8 | Tras el 6, login con la contraseña nueva | 200 con tokens | Feliz |
 | 9 | Tras el 6, `refresh` con un refresh token anterior | ❌ 401 (sesión revocada) | Error |
 | 10 | `reset-password` con código incorrecto | ❌ `Identity.ResetCodeInvalid` (404); suma un intento | Error |
