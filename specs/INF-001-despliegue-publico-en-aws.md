@@ -94,7 +94,7 @@ Total estimado: **~US$45–50/mes**. ⚠️ provisional.
 | Regla | Valor | Origen |
 |---|---|---|
 | Región | `us-east-1` (donde ya está SES y la cuenta) | Estado actual |
-| Cuenta AWS | `021882900326` | Estado actual |
+| Cuenta AWS | la del proyecto (el id está en la guía de operación del vault, no en repos públicos) | Estado actual |
 | Ambientes | Uno (producción del piloto); staging se evalúa cuando haya usuarios reales | ⚠️ provisional |
 | Despliegue a producción | Automático al merge (el merge ya exige PR + CI verde) | ⚠️ provisional |
 | Credenciales de CI | OIDC, rol con permisos mínimos por repo | Seguridad |
