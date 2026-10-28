@@ -14,7 +14,7 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 ## Convenciones
 - Archivo: `RF-XXX-<slug-en-español>.md`. Si un RF se parte en slices: `RF-XXX-<slug>-<slice>.md`.
 - Una pantalla o flujo que no es un RF del SRS (por ejemplo, la bienvenida) usa el prefijo `UX-XXX` con la misma plantilla y explica en la spec a qué RF da entrada.
-- Soporte de desarrollo y pruebas que no es un RF ni una pantalla (por ejemplo, los usuarios de prueba) usa el prefijo `DEV-XXX`.
+- Soporte de desarrollo y pruebas que no es un RF ni una pantalla (por ejemplo, los usuarios de prueba) usa el prefijo `DEV-XXX`. La infraestructura y el despliegue (nube, CI/CD) usan `INF-XXX`.
 - Base: [`_template.md`](_template.md).
 - La tabla de ejemplos es la fuente de las pruebas: cada fila se convierte en al menos una prueba.
 - Valores de negocio sin confirmar se marcan `⚠️ provisional` y generan una pregunta al PO.
@@ -40,5 +40,6 @@ Una spec traduce un requerimiento del vault (RF-XXX) en algo que se puede implem
 | [RF-001 + RF-005 Perfil de usuario](RF-001-RF-005-perfil-de-usuario.md) | RF-001, RF-005 | `Identity` | por asignar | Borrador |
 | [RF-002 + RF-003 Panel de administración](RF-002-RF-003-panel-de-administracion.md) | RF-002, RF-003, RF-012 | `Walkers` | por asignar | En progreso |
 | [DEV-001 Usuarios de prueba predeterminados](DEV-001-usuarios-de-prueba.md) | — (soporte de desarrollo y pruebas) | `Identity` | transversal | Implementada |
+| [INF-001 Despliegue público en AWS](INF-001-despliegue-publico-en-aws.md) | — (infraestructura, ADR-020) | `Infraestructura` | transversal | En progreso |
 | [RF-001 + RF-005 Correos reales (SES) y código de 6 dígitos](RF-001-RF-005-envio-de-correos-reales.md) | RF-001, RF-005 | `Identity` | 1 | Implementada |
 | [RF-001 + RF-005 Recuperación y seguridad de la cuenta](RF-001-RF-005-recuperacion-y-seguridad-de-cuenta.md) | RF-001, RF-005 | `Identity` | 1 | Implementada |
