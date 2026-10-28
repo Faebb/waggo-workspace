@@ -53,7 +53,7 @@ El pilar de Waggo es la **confianza**: solo paseadores verificados reciben paseo
 | Documento | `CC`, `CE` o `PP`; 5–15 dígitos (pasaporte: 5–15 letras o dígitos) | ⚠️ provisional (Colombia) |
 | Teléfono | 10 dígitos (celular colombiano) | ⚠️ provisional |
 | Experiencia | Opcional, hasta 500 caracteres | ⚠️ provisional |
-| Motivo de rechazo | 5–300 caracteres | ⚠️ provisional |
+| Motivo de rechazo | Opcional, máximo 300 caracteres (vacío se guarda como sin motivo) | Decisión del PO (2026-10-27) |
 
 ## Diseño
 - **Domain**: `Entities/Walkers/WalkerProfile` (`Register`, `Approve`, `Reject`), `Enums/Walkers/{VerificationStatus, DocumentType}`, `Errors/Walkers/WalkerErrors`.

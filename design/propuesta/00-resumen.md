@@ -43,7 +43,7 @@ Recuperar contraseña · Reenviar enlace de confirmación · "Nadie aceptó" tra
 7. ¿Se muestra "Llamar al 123" en la emergencia? ¿Quién más recibe la alerta: soporte o un contacto del dueño? (abierta en RF-012)
 8. ¿Calificaciones y reseñas entran en el alcance? No hay RF.
 9. ¿Qué ve el paseador antes de aceptar: barrio o dirección exacta? ¿Y las notas médicas después de aceptar? (abiertas en RF-007 y RF-004)
-10. Umbrales: geocerca de 1,5 km, detención de 10 min, envío cada 15 s, radio de 5 km, "señal vieja" a los 60 s y "GPS impreciso" a más de 50 m (los dos últimos los propone este diseño). Todos ⚠️ provisionales.
+10. Umbrales: geocerca de 1,5 km, detención de 10 min, envío cada 15 s, radio de 5 km, "señal vieja" a los 30 s (decidido por el PO) y "GPS impreciso" a más de 50 m (los dos últimos los propone este diseño). Todos ⚠️ provisionales.
 11. ¿"Ahorro de batería" (envío cada 30 s con batería baja)?
 12. ¿Cómo registra el paseador la cuenta donde cobra y qué método de pago ve el dueño? (depende de la pasarela)
 13. ¿Eliminar la cuenta es un borrado real o una desactivación? ¿Cambiar el correo exige confirmarlo de nuevo? (abiertas en la spec de perfil)

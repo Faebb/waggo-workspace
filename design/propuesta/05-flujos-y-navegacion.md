@@ -82,4 +82,4 @@ Retenido al pedir → Liberado si se cancela antes de empezar → Cobrado al ter
 Configuración o Bienvenida → "Quiero ser paseador" → formulario → **Verificando** (línea de tiempo) → aviso al aprobar → **Aprobado** → Inicio con solicitudes. Rechazado: motivo + "Escribir a soporte" (⚠️ ¿puede reintentar? pregunta abierta).
 
 ### 7. Verificación por el admin — RF-002, RF-003 (panel, slice 1)
-Admin → Paseadores pendientes → "Aprobar" (toast y sale de la cola) o "Rechazar" → hoja con motivo (botón deshabilitado hasta 5 caracteres ⚠️ provisional) → sale de la cola.
+Admin → Paseadores pendientes → "Aprobar" (toast y sale de la cola) o "Rechazar" → hoja con motivo (motivo opcional) → sale de la cola.
