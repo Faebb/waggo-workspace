@@ -1,12 +1,12 @@
 ---
 rf: INF-001
 titulo: Despliegue público en AWS (base de datos, API y web)
-estado: En progreso
+estado: Implementada
 modulo: Infraestructura
 sprint: transversal
 prioridad: Alta
 repos: [waggo-api, waggo-mobile, waggo-infra]
-actualizado: 2026-10-27
+actualizado: 2026-10-28
 ---
 
 # INF-001 — Despliegue público en AWS
@@ -69,14 +69,14 @@ Total estimado: **~US$45–50/mes**. ⚠️ provisional.
 - BD: backups automáticos de RDS; una migración mala se corrige con otra migración hacia adelante.
 
 ## Criterios de aceptación
-- [ ] `https://api.mywaggo.com/health/ready` responde 200 y `https://app.mywaggo.com` carga la app web hablando con esa API.
-- [ ] RDS sin IP pública; solo el security group de la API puede conectarse al puerto 5432.
-- [ ] Merge a `main` en `waggo-api` publica la nueva versión sin pasos manuales y sin claves AWS guardadas en GitHub (OIDC).
-- [ ] Merge a `main` en `waggo-mobile` publica la web nueva e invalida CloudFront.
-- [ ] Si el health check de la versión nueva falla, la versión anterior sigue sirviendo.
-- [ ] En producción **no** se ejecuta el seed de usuarios de prueba (DEV-001) y `Authentication__UseDevelopmentUser=false`.
-- [ ] La infraestructura se puede recrear desde código (repo `waggo-infra`), no solo desde la consola.
-- [ ] El correo sale por SES con el rol de la tarea ECS, no con las claves del perfil `waggo-ses`.
+- [x] `https://api.mywaggo.com/health/ready` responde 200 y `https://app.mywaggo.com` carga la app web hablando con esa API.
+- [x] RDS sin IP pública; solo el security group de la API puede conectarse al puerto 5432.
+- [x] Merge a `main` en `waggo-api` publica la nueva versión sin pasos manuales y sin claves AWS guardadas en GitHub (OIDC).
+- [x] Merge a `main` en `waggo-mobile` publica la web nueva e invalida CloudFront.
+- [ ] Si el health check de la versión nueva falla, la versión anterior sigue sirviendo. (Hay *circuit breaker* con rollback en el servicio ECS y una prueba de la plantilla; no se provocó un fallo real en producción.)
+- [x] En producción **no** se ejecuta el seed de usuarios de prueba (DEV-001) y `Authentication__UseDevelopmentUser=false`.
+- [x] La infraestructura se puede recrear desde código (repo `waggo-infra`), no solo desde la consola.
+- [x] El correo sale por SES con el rol de la tarea ECS, no con las claves del perfil `waggo-ses`. (Mientras SES siga en *sandbox*, solo llega a direcciones verificadas; ver Pendientes.)
 
 ## Tabla de ejemplos
 | # | Entrada | Resultado esperado | Tipo |
@@ -104,7 +104,7 @@ Total estimado: **~US$45–50/mes**. ⚠️ provisional.
 
 ## Diseño
 
-### `waggo-infra` (repo nuevo, IaC con AWS CDK en TypeScript) ⚠️ pendiente de aprobar
+### `waggo-infra` (repo nuevo, IaC con AWS CDK en TypeScript)
 Stacks: `Network` (VPC, subredes, security groups) → `Data` (RDS, Secrets) → `Api` (ECR, ECS, ALB, rol de tarea con permiso SES) → `Web` (S3, CloudFront, ACM, Route 53) → `Pipeline` (proveedor OIDC de GitHub y roles de despliegue por repo).
 
 ### Backend (`waggo-api`)
@@ -142,7 +142,7 @@ Cada paso termina verificado contra AWS real antes de pasar al siguiente:
 - [x] Repo `waggo-infra` con CDK.
 - [x] Subdominios `app.mywaggo.com` y `api.mywaggo.com`.
 - [x] ECS Fargate para la API.
-- [ ] Presupuesto mensual máximo (se usa US$60 como alarma provisional).
+- [x] Presupuesto mensual máximo: alarma de US$60 desplegada (`WaggoBudget`); el valor sigue siendo provisional.
 
 ## Estado (2026-10-28)
 | Paso del plan | Estado |
@@ -150,19 +150,32 @@ Cada paso termina verificado contra AWS real antes de pasar al siguiente:
 | 1. Red + base de datos | ✅ desplegado (RDS PostgreSQL 17, privada) |
 | 2. API (ECR, ECS, ALB) | ✅ desplegada, HTTPS en `api.mywaggo.com` |
 | 3. Migración como paso (`--migrate-only`) | ✅ waggo-api#30 |
-| 4. Web (S3 + CloudFront, `app.mywaggo.com`) | ⏳ pendiente |
-| 5. CD | ✅ API (`deploy.yml`, OIDC) · ⏳ web |
-| 6. Docs | ✅ ADR-020 y guía de operación en el vault; se actualizan en cada paso |
+| 4. Web (S3 + CloudFront, `app.mywaggo.com`) | ✅ desplegada |
+| 5. CD | ✅ API (`deploy.yml`, OIDC) · ✅ web (`deploy.yml`, OIDC; primer despliegue automático verde) |
+| 6. Docs | ✅ ADR-020 y guía de operación en el vault |
+| Extra: sitio público | ✅ `mywaggo.com` y `www` con landing, privacidad y términos (necesario para la solicitud de SES) |
+| Extra: costo | ✅ presupuesto de US$60 con alertas por correo |
+| Extra: correo | ✅ Configuration Set de SES con rebotes y quejas a SNS; `contacto@mywaggo.com` reenvía con Cloudflare Email Routing |
+| Extra: CI de `waggo-infra` | ✅ tipos, pruebas y `cdk synth` en cada PR |
 
 Desviaciones respecto del borrador:
-- **DNS en Cloudflare, no en Route 53**: el certificado ACM se valida con CNAME manual y `api` apunta al ALB con CNAME "solo DNS".
+- **DNS en Cloudflare, no en Route 53**: los certificados ACM se validan con CNAME manual y los registros de `api`, `app`, el sitio y `www` van "solo DNS" (sin proxy).
+- **Imágenes en ECR, no en GHCR** (la fase CD-1 del vault se resolvió así).
 - **Producción corre con `Payments__Provider=Simulated`**: es el único proveedor que existe (ADR-014); no mueve dinero real.
-- **GitHub emite el sujeto OIDC con ids inmutables** (`repo:Faebb@<id>/waggo-api@<id>`); el rol confía en ese formato.
+- **GitHub emite el sujeto OIDC con ids inmutables** (`repo:Faebb@<id>/<repo>@<id>`); los roles confían en ese formato.
 - **CDK y el CI comparten la imagen de la API**: se despliega con `--exclusively` y `-c imageTag=<sha actual>`.
+- **Sitio público agregado**: AWS pidió una URL real del sitio para dar acceso a producción de SES, así que se agregó una landing con privacidad y términos.
+
+## Pendientes
+- [ ] **Acceso a producción de SES**: solicitud en revisión de AWS. Hasta que se apruebe, el correo solo llega a direcciones verificadas.
+- [ ] Apps iOS y Android (EAS Build, fase CD-3).
+- [ ] Revisión legal de la política de privacidad y los términos (hoy son un borrador de piloto).
+- [ ] Endurecer la conexión a RDS (validar el certificado del servidor).
+- [ ] Staging, cuando haya usuarios reales.
 
 ## Trazabilidad
 | Repo | Archivos | Pruebas |
 |---|---|---|
 | waggo-api | `Waggo.Api/Infrastructure/Extensions/StartupArguments.cs`, `Waggo.Api/Program.cs`, `.github/workflows/deploy.yml` (PR #30, #31) | `Tests/Waggo.Api.UnitTests/Infrastructure/Extensions/StartupArgumentsTests.cs` |
-| waggo-mobile | pendiente (web) | |
-| waggo-infra | `lib/*-stack.ts`, `bin/waggo-infra.ts` (PR #1) | `test/infra.test.ts` (11 pruebas) |
+| waggo-mobile | `.github/workflows/deploy.yml` (PR #30) | smoke test del propio workflow |
+| waggo-infra | `lib/*-stack.ts`, `bin/waggo-infra.ts`, `site/`, `.github/workflows/` (PR #1 a #6) | `test/infra.test.ts` (19 pruebas) y CI con `cdk synth` |
