@@ -1,0 +1,208 @@
+/* Motor de presentaciones de Waggo (v1).
+   Láminas 16:9 de 1920x1080 que se escalan al visor, controles, notas del orador e impresión a PDF.
+   No lleva fuentes ni colores de marca: eso vive en tema.css y en cada presentación.
+   Contrato HTML: ver LEEME.md. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0d141c;
+  overflow: hidden;
+}
+
+/* ---------- Visor y lienzo ---------- */
+.visor {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #0d141c;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lienzo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--escala, 1));
+  transform-origin: center center;
+  overflow: hidden;
+  background: var(--fondo, #fff);
+}
+
+/* ---------- Láminas ---------- */
+.lamina {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-lamina, 0.55s) ease, visibility 0s linear var(--dur-lamina, 0.55s);
+  background: var(--fondo, #fff);
+  color: var(--texto, #111);
+}
+
+.lamina.activa {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-lamina, 0.55s) ease, visibility 0s linear 0s;
+}
+
+/* Entrada por defecto: un deslizamiento corto en la dirección del recorrido. */
+.lamina > .contenido-lamina { transition: transform var(--dur-lamina, 0.55s) cubic-bezier(0.22, 1, 0.36, 1); }
+.visor[data-dir='adelante'] .lamina:not(.activa) > .contenido-lamina { transform: translateX(-40px); }
+.visor[data-dir='atras'] .lamina:not(.activa) > .contenido-lamina { transform: translateX(40px); }
+.visor[data-dir='adelante'] .lamina.activa > .contenido-lamina,
+.visor[data-dir='atras'] .lamina.activa > .contenido-lamina { transform: none; }
+
+/* Pasos: elementos que aparecen al avanzar dentro de la misma lámina. */
+[data-paso] {
+  transition: opacity var(--dur-paso, 0.45s) ease, transform var(--dur-paso, 0.45s) cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-paso]:not(.paso-visible) {
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+}
+
+/* Las notas viven en la lámina pero solo se muestran en el panel. */
+.lamina > .notas { display: none; }
+
+/* ---------- Controles ---------- */
+.motor-barra {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(22, 33, 46, 0.92);
+  color: #fff0e9;
+  font: 500 14px/1 Inter, system-ui, sans-serif;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.4s ease;
+  max-width: calc(100vw - 24px);
+}
+body.motor-inactivo .motor-barra:not(:focus-within) { opacity: 0; pointer-events: none; }
+
+.motor-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: inherit;
+}
+.motor-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.motor-btn:hover { background: rgba(255, 240, 233, 0.16); }
+.motor-btn[aria-pressed='true'] { background: #5b9bd5; color: #16212e; }
+.motor-btn:disabled { opacity: 0.35; cursor: default; }
+
+.motor-puntos { display: flex; list-style: none; margin: 0 4px; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.motor-puntos::-webkit-scrollbar { display: none; }
+.motor-punto {
+  all: unset;
+  box-sizing: border-box;
+  width: 22px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+}
+.motor-punto::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 240, 233, 0.38);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.motor-punto:hover::after { background: rgba(255, 240, 233, 0.75); }
+.motor-punto[aria-current='true']::after { background: #5b9bd5; transform: scale(1.5); }
+.motor-punto[data-hecho='true']:not([aria-current='true'])::after { background: rgba(255, 240, 233, 0.7); }
+
+.motor-contador { min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.motor-btn:focus-visible, .motor-punto:focus-visible {
+  outline: 3px solid #7fd4ec;
+  outline-offset: 1px;
+}
+
+/* ---------- Notas del orador ---------- */
+.motor-notas {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 18px 24px 76px;
+  background: #fff0e9;
+  color: #16212e;
+  font: 400 18px/1.5 Inter, system-ui, sans-serif;
+  border-top: 4px solid #3059a4;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+  transform: translateY(0);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.motor-notas[hidden] { display: block; transform: translateY(105%); visibility: hidden; transition: transform 0.35s ease, visibility 0s linear 0.35s; }
+.motor-notas h2 { margin: 0 0 6px; font: 700 14px/1 Inter, system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #3059a4; }
+.motor-notas p { margin: 0 0 8px; max-width: 110ch; }
+.motor-notas ul { margin: 0 0 8px; padding-left: 1.2em; }
+.motor-notas .motor-atajos { margin-top: 10px; font-size: 14px; color: #3a4a5c; }
+.motor-notas kbd { font: 600 13px Inter, sans-serif; border: 1px solid #8c7b70; border-radius: 4px; padding: 1px 6px; background: #fff; }
+
+.motor-solo-lector {
+  position: absolute !important;
+  width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-lamina: 0.01s; --dur-paso: 0.01s; }
+  .lamina > .contenido-lamina { transition: none !important; transform: none !important; }
+  [data-paso]:not(.paso-visible) { transform: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; animation-delay: 0s !important; scroll-behavior: auto !important; }
+  .motor-notas, .motor-barra { transition: none; }
+}
+
+/* ---------- Impresión: una lámina por página ---------- */
+@page { size: 1920px 1080px; margin: 0; }
+
+body.imprimiendo, body.imprimiendo .visor { position: static; overflow: visible; height: auto; background: #fff; }
+body.imprimiendo .lienzo {
+  position: static; transform: none; width: 1920px; height: auto; overflow: visible;
+}
+body.imprimiendo .lamina {
+  position: relative; inset: auto; width: 1920px; height: 1080px;
+  opacity: 1; visibility: visible; transition: none;
+  break-after: page; page-break-after: always; break-inside: avoid;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+body.imprimiendo .lamina:last-of-type { break-after: auto; page-break-after: auto; }
+body.imprimiendo .lamina > .contenido-lamina { transform: none !important; transition: none; }
+body.imprimiendo [data-paso], body.imprimiendo [data-paso]:not(.paso-visible) { opacity: 1; transform: none; pointer-events: auto; transition: none; }
+body.imprimiendo .motor-barra, body.imprimiendo .motor-notas { display: none !important; }
+
+@media print {
+  html, body { height: auto; overflow: visible; background: #fff; }
+  .motor-barra, .motor-notas { display: none !important; }
+}
+
+/* Modo estático (?estatico): sin transiciones ni animaciones, para capturas reproducibles. */
+html.estatico *, html.estatico *::before, html.estatico *::after { transition: none !important; animation: none !important; }
+
+html:has(body.imprimiendo) { height: auto; overflow: visible; }
+body.imprimiendo .lienzo { display: block; margin: 0; padding: 0; }
+body.imprimiendo .motor-solo-lector { display: none; }
