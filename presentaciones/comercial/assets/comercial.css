@@ -1,0 +1,133 @@
+/* Presentación comercial de Waggo. Tokens y motor: ../../_motor/. Fuentes locales (sin internet). */
+
+@font-face { font-family: 'Baloo 2'; font-weight: 700; font-style: normal; font-display: block; src: url('fonts/Baloo2_700Bold.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: block; src: url('fonts/Inter_400Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: block; src: url('fonts/Inter_500Medium.ttf') format('truetype'); }
+@font-face { font-family: 'Inter'; font-weight: 700; font-style: normal; font-display: block; src: url('fonts/Inter_700Bold.ttf') format('truetype'); }
+
+.ico { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- Diseño de láminas ---------- */
+.contenido-lamina { position: absolute; inset: 0; }
+.col-izq { position: absolute; left: 110px; top: 0; bottom: 0; width: 540px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+.col-der { position: absolute; right: 110px; top: 0; bottom: 0; width: 540px; display: flex; flex-direction: column; justify-content: center; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.col-izq .titulo { font-size: 68px; }
+.col-izq .texto { font-size: 32px; color: var(--suave); }
+
+.marca-pie {
+  position: absolute; left: 110px; bottom: 34px; display: flex; align-items: center; gap: 12px;
+  font-family: var(--fuente-titulo); font-weight: 700; font-size: 28px; color: var(--primario);
+}
+.marca-pie .medalla { flex: none; }
+.marca-pie span.sec { font-family: var(--fuente-texto); font-weight: 500; font-size: 20px; color: var(--suave); margin-left: 6px; letter-spacing: 0.02em; }
+
+.nota-pie { position: absolute; right: 110px; bottom: 36px; max-width: 520px; text-align: right; font-size: 20px; line-height: 1.3; color: var(--suave); }
+
+/* Puntos clave a la derecha: se encienden de a uno */
+.punto {
+  display: grid; grid-template-columns: 56px 1fr; column-gap: 18px; align-items: start;
+  background: var(--superficie); border: 2px solid var(--borde); border-radius: var(--radio-lg);
+  padding: 18px 22px; box-shadow: var(--sombra-tarjeta);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.punto .medallon { width: 56px; height: 56px; border-radius: 50%; background: var(--superficie2); color: var(--primario); display: grid; place-items: center; font-size: 32px; }
+.punto h3 { font-size: 30px; line-height: 1.1; color: var(--texto); margin-bottom: 4px; }
+.punto p { font-size: 24px; line-height: 1.32; color: var(--suave); }
+.punto.actual { border-color: var(--primario); box-shadow: 0 6px 24px rgba(48, 89, 164, 0.22); }
+.punto.actual .medallon { background: var(--primario); color: var(--sobre-primario); }
+.punto .num { font-family: var(--fuente-titulo); font-weight: 700; font-size: 34px; }
+
+.etiqueta-rol { align-self: flex-start; }
+
+/* ---------- Teléfono ---------- */
+.capa-tel, .tel-impr { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.halo {
+  position: absolute; left: 50%; top: 50%; width: 600px; height: 600px; margin: -300px 0 0 -300px; border-radius: 50%;
+  background: var(--superficie2); opacity: 1; transform: scale(1);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+}
+.capa-tel.fuera .halo { transform: scale(0.4); opacity: 0; }
+
+.telefono {
+  position: absolute; left: 50%; top: 50%; width: 414px; height: 868px; margin: -434px 0 0 -207px;
+  transform: scale(1.12); transform-origin: center center;
+  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+}
+.capa-tel.fuera .telefono { transform: translateY(900px) scale(1.12); opacity: 0; }
+.tel-cuerpo { position: absolute; inset: 0; border-radius: 62px; background: #16212e; padding: 12px; box-shadow: 0 30px 80px rgba(22, 33, 46, 0.35), inset 0 0 0 2px #2a3b4d; }
+.tel-pantalla { position: relative; width: 390px; height: 844px; border-radius: 50px; overflow: hidden; background: #fff0e9; isolation: isolate; }
+.tel-isla { position: absolute; left: 50%; top: 22px; width: 96px; height: 28px; margin-left: -48px; border-radius: 20px; background: #0b1118; z-index: 3; }
+.tel-pila { position: absolute; inset: 0; }
+.pant { position: absolute; inset: 0; width: 390px; height: 844px; background: #fff0e9; }
+.pant svg { display: block; width: 390px; height: 844px; }
+.pant.empuja { box-shadow: -12px 0 32px rgba(22, 33, 46, 0.28); }
+.hoja { position: absolute; inset: 0; width: 390px; height: 844px; }
+.hoja svg { display: block; width: 390px; height: 844px; }
+.scrim { position: absolute; inset: 0; background: #16212e66; }
+.tel-toques { position: absolute; inset: 0; z-index: 2; }
+.toque {
+  position: absolute; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+  background: rgba(48, 89, 164, 0.28); border: 3px solid rgba(48, 89, 164, 0.85); opacity: 0;
+}
+.tel-impr .telefono { transition: none; }
+
+/* ---------- Estado del paseo ---------- */
+.chip-estado {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 14px; min-height: 64px; padding: 8px 30px 8px 22px;
+  border-radius: var(--radio-pill); font-family: var(--fuente-titulo); font-weight: 700; font-size: 34px;
+  background: #d9eef7; color: #0d4e66; transition: background 0.6s ease, color 0.6s ease;
+}
+.chip-estado .punto-estado { width: 16px; height: 16px; border-radius: 50%; background: currentColor; animation: latido 1.6s ease-in-out infinite; }
+.chip-estado[data-estado='Terminado'] { background: #d6eee1; color: #14573a; }
+.chip-estado[data-estado='Terminado'] .punto-estado { animation: none; }
+@keyframes latido { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.55); opacity: 0.55; } }
+
+/* ---------- Láminas especiales ---------- */
+.portada .logo-grande { position: absolute; left: 150px; top: 190px; width: 560px; height: 560px; object-fit: contain; }
+.portada .bloque { position: absolute; left: 790px; top: 0; bottom: 0; width: 1000px; display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+.portada .titulo-grande { font-size: 124px; }
+.portada .titulo-grande em { font-style: normal; color: var(--primario); }
+.portada .manchas::before, .portada .manchas::after { content: ''; position: absolute; border-radius: 50%; background: var(--superficie2); }
+.portada .manchas::before { width: 900px; height: 900px; left: -260px; top: 90px; }
+.portada .manchas::after { width: 360px; height: 360px; right: -90px; top: -110px; opacity: 0.8; }
+
+.pregunta-grid { position: absolute; left: 110px; right: 110px; top: 400px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+.pregunta { background: var(--superficie); border: 2px solid var(--borde); border-radius: var(--radio-lg); padding: 40px 38px 36px; min-height: 380px; display: flex; flex-direction: column; gap: 22px; }
+.pregunta .q { font-family: var(--fuente-titulo); font-weight: 700; font-size: 52px; line-height: 1.05; color: var(--texto); }
+.pregunta .a { margin-top: auto; display: flex; gap: 16px; align-items: flex-start; font-size: 30px; line-height: 1.3; color: var(--texto); padding-top: 22px; border-top: 2px solid var(--borde); opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s; }
+.pregunta .a .ico { font-size: 40px; color: var(--primario); margin-top: 2px; }
+.pregunta.paso-visible .a, body.imprimiendo .pregunta .a { opacity: 1; transform: none; }
+
+.rejilla-6 { position: absolute; left: 110px; right: 110px; top: 300px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.rejilla-6 .punto { grid-template-columns: 1fr; row-gap: 14px; padding: 30px 32px; align-content: start; }
+.rejilla-6 .punto h3 { font-size: 36px; }
+.rejilla-6 .punto p { font-size: 27px; }
+
+.cta .enlace { display: inline-flex; align-items: center; min-height: 92px; padding: 0 56px; border-radius: var(--radio-pill); background: var(--primario); color: var(--sobre-primario); font-family: var(--fuente-titulo); font-weight: 700; font-size: 54px; text-decoration: none; box-shadow: 0 10px 30px rgba(48, 89, 164, 0.35); pointer-events: auto; }
+.cta .enlace:hover { filter: brightness(1.08); }
+
+/* Movimiento reducido: sin latido ni deslizamientos del teléfono */
+@media (prefers-reduced-motion: reduce) {
+  .chip-estado .punto-estado { animation: none; }
+  .telefono, .halo { transition: none; }
+}
+
+/* Impresión: el teléfono permanente se oculta; cada lámina lleva el suyo (ver telefono.js) */
+body.imprimiendo .capa-tel { display: none; }
+body.imprimiendo .punto, body.imprimiendo .punto.actual { transition: none; }
+body.imprimiendo .punto.actual { border-color: var(--borde); box-shadow: var(--sombra-tarjeta); }
+body.imprimiendo .punto.actual .medallon { background: var(--superficie2); color: var(--primario); }
+
+/* Capturas reales */
+.reales { position: absolute; left: 800px; top: 70px; width: 1070px; display: flex; gap: 60px; justify-content: center; }
+.real { margin: 0; }
+.real-marco { position: relative; width: 434px; height: 940px; border-radius: 30px; overflow: hidden; border: 6px solid #16212e; box-shadow: 0 24px 60px rgba(22,33,46,.28); background: #fff0e9; }
+.real-marco img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.real-marco img.difuminada { filter: blur(16px); }
+.lista-real { margin: 0; padding-left: 1.1em; font-size: 28px; line-height: 1.5; color: var(--texto); }
+.nota-pie { bottom: 84px; }
+
+/* Lámina de acento zafiro: las tarjetas blancas llevan texto oscuro */
+.zafiro .punto h3 { color: #16212e; }
+.zafiro .punto p { color: #3a4a5c; }
+.zafiro .punto .medallon { background: #fbe2d3; color: #3059a4; }

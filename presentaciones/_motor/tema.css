@@ -1,0 +1,168 @@
+/* Tema Seashell & Sapphire (ADR-018) para las presentaciones de Waggo.
+   Los valores salen de waggo-mobile/src/shared/ui/theme.ts: no inventar colores aquí.
+   Las fuentes (Baloo 2 700, Inter 400/500/700) las declara cada presentación con rutas a su carpeta assets/fonts. */
+
+:root {
+  /* Paleta clara (lightColors) */
+  --primario: #3059a4;
+  --sobre-primario: #ffffff;
+  --secundario: #006e87;
+  --info: #2e9ec4;
+  --advertencia: #c97a2b;
+  --advertencia-texto: #9a5a17;
+  --texto: #16212e;
+  --suave: #3a4a5c;
+  --superficie: #ffffff;
+  --superficie2: #fbe2d3;
+  --fondo: #fff0e9;
+  --borde: #e8d2c3;
+  --borde-fuerte: #8c7b70;
+  --peligro: #c23b3b;
+  --sobre-peligro: #ffffff;
+  --exito: #1f7a52;
+
+  /* Formas y sombras (radius, shadows) */
+  --radio-sm: 8px;
+  --radio-md: 14px;
+  --radio-lg: 20px;
+  --radio-pill: 999px;
+  --sombra-tarjeta: 0 2px 8px rgba(22, 33, 46, 0.08);
+  --sombra-hoja: 0 -4px 24px rgba(22, 33, 46, 0.16);
+
+  --fuente-titulo: 'Baloo 2', 'Baloo2', system-ui, sans-serif;
+  --fuente-texto: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --margen: 120px;
+}
+
+/* Paleta oscura (darkColors): se activa con .oscuro en una lámina o contenedor */
+.oscuro {
+  --primario: #5b9bd5;
+  --sobre-primario: #16212e;
+  --secundario: #3fa3bd;
+  --info: #7fd4ec;
+  --advertencia: #f2a65a;
+  --advertencia-texto: #f2a65a;
+  --texto: #fff0e9;
+  --suave: #8fa5b8;
+  --superficie: #1c2733;
+  --superficie2: #22303e;
+  --fondo: #16212e;
+  --borde: #2a3b4d;
+  --borde-fuerte: #5e7488;
+  --peligro: #ff7a7a;
+  --sobre-peligro: #16212e;
+  --exito: #4cc38a;
+}
+
+/* Lámina de acento: fondo zafiro con texto crema (el logo va siempre sobre la medalla crema) */
+.zafiro {
+  --fondo: #3059a4;
+  --texto: #ffffff;
+  --suave: #e6eefb;
+  --primario: #ffffff;
+  --sobre-primario: #3059a4;
+  --superficie: #ffffff;
+  --borde: rgba(255, 255, 255, 0.35);
+}
+
+.lamina {
+  font-family: var(--fuente-texto);
+  font-size: 32px;
+  line-height: 1.45;
+  color: var(--texto);
+  background: var(--fondo);
+}
+
+.lamina h1, .lamina h2, .lamina h3 {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.lamina p { margin: 0; text-wrap: pretty; }
+
+/* Tipografía (equivale a typography de theme.ts, ampliada para proyectar) */
+.titulo-grande { font-family: var(--fuente-titulo); font-weight: 700; font-size: 112px; line-height: 1; letter-spacing: -0.02em; }
+.titulo { font-family: var(--fuente-titulo); font-weight: 700; font-size: 76px; line-height: 1.04; letter-spacing: -0.015em; }
+.subtitulo { font-family: var(--fuente-titulo); font-weight: 700; font-size: 44px; line-height: 1.12; }
+.texto { font-size: 32px; line-height: 1.45; }
+.texto-grande { font-size: 38px; line-height: 1.4; }
+.pequeno { font-size: 24px; line-height: 1.4; }
+.suave { color: var(--suave); }
+.eyebrow {
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primario);
+}
+.marca-texto { font-family: var(--fuente-titulo); font-weight: 700; }
+
+/* Notas al pie con la fuente de cada dato */
+.fuente {
+  position: absolute;
+  left: var(--margen);
+  bottom: 30px;
+  max-width: 1060px;
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--suave);
+}
+.fuente b { color: var(--texto); font-weight: 700; }
+
+/* Componentes */
+.tarjeta {
+  background: var(--superficie);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-tarjeta);
+  padding: 32px 36px;
+}
+.pastilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 26px;
+  border-radius: var(--radio-pill);
+  background: var(--superficie2);
+  color: var(--texto);
+  font-weight: 700;
+  font-size: 26px;
+}
+.pastilla.primaria { background: var(--primario); color: var(--sobre-primario); }
+.boton-app {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 0 44px;
+  border-radius: var(--radio-pill);
+  background: var(--primario);
+  color: var(--sobre-primario);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 36px;
+}
+
+.centrar { display: grid; place-items: center; text-align: center; }
+.col { display: flex; flex-direction: column; }
+.fila { display: flex; align-items: center; }
+.separar { gap: 24px; }
+
+/* Medalla crema del logo para fondos oscuros o zafiro */
+.medalla {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff0e9;
+  overflow: hidden;
+}
+.medalla img { width: 86%; height: 86%; object-fit: contain; }
+
+a { color: inherit; }
+:focus-visible { outline: 4px solid var(--info); outline-offset: 3px; }
